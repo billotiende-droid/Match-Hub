@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import {Navbar} from "@/components/ui/navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Match Hub",
-  description: "Your hub for sports matches and leagues",
+  title: 'Match Hub | Kenya\'s #1 Turf Booking Platform',
+  description: 'Book the best football turfs in Nairobi and beyond.',
+  openGraph: {
+    images: ['/og-image.jpg'],
+  },
 };
 
 export default function RootLayout({
@@ -28,7 +30,6 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
         {children}
       </body>
     </html>
