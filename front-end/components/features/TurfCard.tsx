@@ -17,7 +17,7 @@ interface TurfCardProps {
 
 export const TurfCard = ({ turf }: TurfCardProps) => {
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+    <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-shadow">
       <div className="relative h-48 overflow-hidden">
         <img 
           src={turf.image} 
@@ -36,9 +36,9 @@ export const TurfCard = ({ turf }: TurfCardProps) => {
       </div>
       
       <div className="p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">{turf.name}</h3>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{turf.name}</h3>
         
-        <div className="flex items-center gap-2 text-gray-500 mb-4">
+        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 mb-4">
           <MapPin className="w-4 h-4" />
           <span className="text-sm">{turf.location}</span>
         </div>
@@ -50,7 +50,7 @@ export const TurfCard = ({ turf }: TurfCardProps) => {
             <span className="text-gray-400 text-sm">/hour</span>
           </div>
           
-          <button className="bg-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition">
+          <button className="bg-gray-900 dark:bg-white dark:text-gray-900 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition">
             Book Now
           </button>
         </div>
