@@ -13,7 +13,7 @@ export default async function Home() {
   const turfs = await getFeaturedTurfs();
 
   return (
-    <main className="min-h-screen bg-white dark:bg-gray-900">
+    <main className="min-h-screen bg-white dark:bg-gradient-to-b dark:from-black dark:to-[#4a0412]">
       <Navbar />
       <Hero />
       <TurfSearch />
