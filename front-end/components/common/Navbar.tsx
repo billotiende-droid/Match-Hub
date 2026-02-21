@@ -24,7 +24,7 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="flex items-center justify-between px-8 py-4 bg-white border-b dark:bg-gray-900 dark:border-gray-700">
+    <nav className="flex items-center justify-between px-8 py-4 bg-white border-b dark:bg-gradient-to-r dark:from-black dark:to-[#4a0412] dark:border-gray-800">
       <div className="flex items-center gap-2">
         <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
           <div className="w-4 h-4 border-2 border-white rounded-sm rotate-45" />
