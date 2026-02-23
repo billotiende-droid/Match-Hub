@@ -25,17 +25,17 @@ export const TurfSearch = () => {
   };
 
   return (
-    <div className="container mx-auto px-6 -mt-16 relative z-20">
+    <div className="container mx-auto px-6 -mt-14 relative z-20">
       <form
         onSubmit={onSubmit}
-        className="surface-card p-6 md:p-8 rounded-[20px] space-y-5"
+        className="surface-card p-6 md:p-8 rounded-[20px] space-y-5 shadow-xl"
       >
-        <div className="flex items-center gap-4 bg-[var(--surface-muted)] border border-[var(--color-border)] px-5 py-4 rounded-xl focus-within:ring-2 ring-[color-mix(in_oklab,var(--color-primary)_26%,transparent)] transition-all">
-          <Search className="text-gray-400" size={22} />
+        <div className="flex items-center gap-4 bg-white border border-[var(--color-border)] px-5 py-4 rounded-xl focus-within:ring-2 ring-[color-mix(in_oklab,var(--color-primary)_26%,transparent)] transition-all">
+          <Search className="text-gray-400" size={20} />
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="bg-transparent w-full outline-none text-lg placeholder:text-gray-400 text-gray-700"
+            className="bg-transparent w-full outline-none text-base md:text-lg placeholder:text-gray-400 text-gray-700"
             placeholder="Search turfs by name or location..."
           />
         </div>
@@ -65,7 +65,7 @@ export const TurfSearch = () => {
           </select>
           <button
             type="submit"
-            className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-xl font-black text-lg hover:bg-[var(--color-primary-strong)] hover:shadow-lg transition-all"
+            className="bg-[var(--color-primary)] text-white px-8 py-3 rounded-xl font-black text-base md:text-lg hover:bg-[var(--color-primary-strong)] hover:shadow-lg transition-all"
           >
             Search
           </button>
