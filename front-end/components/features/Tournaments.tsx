@@ -1,4 +1,5 @@
 // src/components/features/Tournaments.tsx
+import Link from 'next/link';
 import { Trophy, Calendar, MapPin, Users } from 'lucide-react';
 
 const tournaments = [
@@ -8,33 +9,34 @@ const tournaments = [
 ];
 
 export const Tournaments = () => (
-  <section className="py-20 bg-gray-50 dark:bg-gray-800">
+  <section className="py-20 bg-white">
     <div className="container mx-auto px-6">
       <div className="text-center mb-16">
-        <h2 className="text-4xl font-bold mb-4 dark:text-white">Upcoming Tournaments</h2>
-        <p className="text-gray-500 dark:text-gray-400">Join exciting tournaments and compete for amazing prizes</p>
+        <h2 className="text-5xl font-black mb-4 text-gray-900">Upcoming Tournaments</h2>
+        <p className="text-gray-600">Join exciting tournaments and compete for amazing prizes</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {tournaments.map((t) => (
-          <div key={t.id} className="bg-white dark:bg-gray-900 rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-all">
+          <div key={t.id} className="surface-card rounded-2xl overflow-hidden hover:-translate-y-1 hover:shadow-md transition-all">
+            <div className="h-1 bg-[var(--color-primary)]" />
             <div className="p-6 space-y-4">
-              <div className="w-12 h-12 bg-green-600 rounded-xl flex items-center justify-center text-white">
+              <div className="w-12 h-12 bg-[var(--color-secondary)] rounded-xl flex items-center justify-center text-white">
                 <Trophy size={24} />
               </div>
-              <h3 className="text-xl font-bold dark:text-white">{t.title}</h3>
-              <div className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                <div className="flex items-center gap-2"><Calendar size={16} className="text-red-500"/> {t.date}</div>
-                <div className="flex items-center gap-2"><MapPin size={16} className="text-red-500"/> {t.location}</div>
-                <div className="flex items-center gap-2"><Users size={16} className="text-red-500"/> {t.teams} Teams</div>
+              <h3 className="text-xl font-bold text-gray-900">{t.title}</h3>
+              <div className="space-y-2 text-sm text-gray-600">
+                <div className="flex items-center gap-2"><Calendar size={16} className="text-[var(--color-primary)]"/> {t.date}</div>
+                <div className="flex items-center gap-2"><MapPin size={16} className="text-[var(--color-primary)]"/> {t.location}</div>
+                <div className="flex items-center gap-2"><Users size={16} className="text-[var(--color-primary)]"/> {t.teams} Teams</div>
               </div>
-              <div className="pt-4 border-t dark:border-gray-700">
+              <div className="pt-4 border-t border-[var(--color-border)]">
                 <p className="text-xs text-gray-400 uppercase font-bold tracking-wider">Prize Pool</p>
-                <p className="text-xl font-black text-green-700">{t.prize}</p>
+                <p className="text-xl font-black text-[var(--color-secondary)]">{t.prize}</p>
               </div>
-              <button className="w-full py-4 bg-green-800 text-white rounded-xl font-bold hover:bg-green-900 transition-colors">
+              <Link href="/signup" className="block w-full text-center py-4 bg-[var(--color-secondary)] text-white rounded-xl font-bold hover:bg-[color-mix(in_oklab,var(--color-secondary)_88%,black)] transition-colors">
                 Register Team
-              </button>
+              </Link>
             </div>
           </div>
         ))}
