@@ -1,36 +1,26 @@
 // src/components/common/Footer.tsx
 "use client";
+import Link from 'next/link';
 import { Facebook, Twitter, Instagram, Phone, Mail, MapPin } from 'lucide-react';
-import { useState, useEffect } from 'react';
-
+ 
 export const Footer = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    if (!isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
 
   return (
-    <footer className="bg-white dark:bg-gradient-to-b dark:from-black dark:to-[#4a0412] text-gray-600 dark:text-gray-400 py-16">
+    <footer className="mt-12 text-gray-600 dark:text-gray-400 py-16 border-t border-[var(--color-border)]/70 bg-[color-mix(in_oklab,var(--surface)_96%,transparent)] backdrop-blur">
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
         <div className="space-y-4">
-          <div className="flex items-center gap-2 text-gray-900 dark:text-white">
-            <div className="w-8 h-8 bg-green-600 rounded-full" />
-            <span className="font-bold text-xl">Match Hub</span>
+          <div className="flex items-center gap-3 text-gray-900 dark:text-white">
+            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" fill="#ff5a1f" stroke="#e44a14" strokeWidth="2"/>
+              <path d="M12 2C12 2 5 6 5 12C5 17 9 21 12 22C15 21 19 17 19 12C19 6 12 2 12 2Z" fill="#22c55e" stroke="#ffffff" strokeWidth="1.5"/>
+              <path d="M2 12H22" stroke="#ffffff" strokeWidth="1.5"/>
+              <path d="M5.5 5.5L18.5 18.5" stroke="#ffffff" strokeWidth="1.5"/>
+              <path d="M18.5 5.5L5.5 18.5" stroke="#ffffff" strokeWidth="1.5"/>
+              <circle cx="12" cy="12" r="2" fill="#ffffff"/>
+            </svg>
+            <span className="font-extrabold text-xl tracking-tight">Match Hub</span>
           </div>
-          <p className="text-sm">Kenya's premier turf booking platform. Book. Play. Compete. Win.</p>
+          <p className="text-sm">Kenya&apos;s premier turf booking platform. Book. Play. Compete. Win.</p>
           <div className="flex gap-4">
             <Facebook size={20} className="hover:text-gray-900 dark:hover:text-white cursor-pointer" />
             <Twitter size={20} className="hover:text-gray-900 dark:hover:text-white cursor-pointer" />
@@ -41,52 +31,32 @@ export const Footer = () => {
         <div>
           <h4 className="text-gray-900 dark:text-white font-bold mb-6">Quick Links</h4>
           <ul className="space-y-4 text-sm">
-            <li className="hover:text-green-600 cursor-pointer">Find Turfs</li>
-            <li className="hover:text-green-600 cursor-pointer">Tournaments</li>
-            <li className="hover:text-green-600 cursor-pointer">Book a Game</li>
+            <li><Link href="/turfs" className="hover:text-gray-900 dark:hover:text-white">Find Turfs</Link></li>
+            <li><Link href="/tournaments" className="hover:text-gray-900 dark:hover:text-white">Tournaments</Link></li>
+            <li><Link href="/games" className="hover:text-gray-900 dark:hover:text-white">Book a Game</Link></li>
           </ul>
         </div>
 
         <div>
           <h4 className="text-gray-900 dark:text-white font-bold mb-6">Support</h4>
           <ul className="space-y-4 text-sm">
-            <li className="hover:text-green-600 cursor-pointer">Help Center</li>
-            <li className="hover:text-green-600 cursor-pointer">Terms of Service</li>
-            <li className="hover:text-green-600 cursor-pointer">Privacy Policy</li>
+            <li className="hover:text-gray-900 dark:hover:text-white cursor-pointer">Help Center</li>
+            <li className="hover:text-gray-900 dark:hover:text-white cursor-pointer">Terms of Service</li>
+            <li className="hover:text-gray-900 dark:hover:text-white cursor-pointer">Privacy Policy</li>
           </ul>
         </div>
 
         <div>
           <h4 className="text-gray-900 dark:text-white font-bold mb-6">Contact Us</h4>
           <ul className="space-y-4 text-sm">
-            <li className="flex items-center gap-3"><Phone size={16} className="text-red-500" /> +254 700 123 456</li>
-            <li className="flex items-center gap-3"><Mail size={16} className="text-red-500" /> info@matchhub.co.ke</li>
-            <li className="flex items-center gap-3"><MapPin size={16} className="text-red-500" /> Nairobi, Kenya</li>
+            <li className="flex items-center gap-3"><Phone size={16} className="text-[var(--color-primary)]" /> +254 700 123 456</li>
+            <li className="flex items-center gap-3"><Mail size={16} className="text-[var(--color-primary)]" /> info@matchhub.co.ke</li>
+            <li className="flex items-center gap-3"><MapPin size={16} className="text-[var(--color-primary)]" /> Nairobi, Kenya</li>
           </ul>
         </div>
       </div>
-      <div className="container mx-auto px-6 pt-12 mt-12 border-t border-gray-200 dark:border-gray-800 text-center text-xs">
+      <div className="container mx-auto px-6 pt-12 mt-12 border-t border-[var(--color-border)] text-center text-xs">
         © 2026 Match Hub. All rights reserved. Made with ❤️ in Kenya
-      </div>
-      
-      {/* Dark Mode Toggle Button */}
-      <div className="fixed bottom-6 right-6 z-50">
-        <button 
-          onClick={toggleDarkMode}
-          className="p-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-all"
-          aria-label="Toggle dark mode"
-        >
-          {isDarkMode ? (
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="5"/>
-              <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-            </svg>
-          ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-          )}
-        </button>
       </div>
     </footer>
   );
