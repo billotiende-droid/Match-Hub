@@ -29,15 +29,15 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-40 flex items-center justify-between px-6 md:px-10 py-3 border-b border-[var(--color-border)] bg-white/95 backdrop-blur-md">
-      <Link href="/" className="flex items-center gap-3">
+    <nav className="sticky top-0 z-40 flex items-center justify-between px-6 md:px-10 py-4 border-b border-[var(--color-border)] bg-white">
+      <Link href="/" className="flex items-center gap-3 text-gray-900">
         <div className="w-9 h-9 bg-[var(--color-secondary)] rounded-full flex items-center justify-center shadow-sm">
-          <div className="w-4 h-4 border-2 border-white rounded-sm rotate-45" />
+          <div className="w-4 h-4 rounded-full border-2 border-white" />
         </div>
-        <span className="font-bold text-xl tracking-tight">Match Hub</span>
+        <span className="font-bold text-lg tracking-tight">Match Hub</span>
       </Link>
 
-      <div className="hidden md:flex items-center gap-8 text-gray-600 font-medium">
+      <div className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
         <Link href="/turfs" className="hover:text-[var(--color-primary)] transition-colors">Turfs</Link>
         <Link href="/games" className="hover:text-[var(--color-primary)] transition-colors">Games</Link>
         <Link href="/tournaments" className="hover:text-[var(--color-primary)] transition-colors">Tournaments</Link>
@@ -71,7 +71,7 @@ export const Navbar = () => {
           <>
             <Link
               href="/login"
-              className="border border-[var(--color-secondary)] text-[var(--color-secondary)] px-5 py-2 rounded-xl font-semibold hover:bg-[var(--color-secondary)] hover:text-white transition-colors"
+              className="text-gray-700 font-semibold hover:text-[var(--color-primary)] transition-colors"
             >
               Login
             </Link>
