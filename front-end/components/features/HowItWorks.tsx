@@ -7,22 +7,22 @@ const steps = [
 ];
 
 export const HowItWorks = () => (
-  <section className="py-20 bg-white dark:bg-gray-900">
+  <section className="py-20 bg-[var(--surface-muted)] relative overflow-hidden">
+    <div className="absolute inset-0 opacity-35 [background-image:linear-gradient(to_bottom,rgba(148,163,184,.18)_1px,transparent_1px)] [background-size:100%_58px]" />
     <div className="container mx-auto px-6 text-center">
-      <h2 className="text-4xl font-bold mb-4 dark:text-white">How It Works</h2>
-      <p className="text-gray-500 dark:text-gray-400 mb-16">Book your perfect turf in just four simple steps</p>
+      <h2 className="text-5xl font-black mb-4 text-gray-900 relative z-10">How It Works</h2>
+      <p className="text-gray-600 mb-14 relative z-10">Book your perfect turf in just four simple steps</p>
       
-      <div className="relative grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* The connecting line (desktop only) */}
-        <div className="hidden md:block absolute top-8 left-0 w-full h-0.5 bg-red-100 -z-10" />
+      <div className="relative grid grid-cols-1 md:grid-cols-4 gap-10 z-10">
+        <div className="hidden md:block absolute top-6 left-[8%] right-[8%] h-[2px] bg-[var(--color-primary)]/45" />
         
         {steps.map((step) => (
           <div key={step.id} className="flex flex-col items-center">
-            <div className="w-16 h-16 bg-[#D31D3F] text-white rounded-full flex items-center justify-center text-2xl font-bold mb-6 shadow-lg border-4 border-white dark:border-gray-700">
+            <div className="w-14 h-14 bg-[var(--color-primary)] text-white rounded-full flex items-center justify-center text-2xl font-bold mb-5 shadow-lg border-4 border-[var(--surface-muted)]">
               {step.id}
             </div>
-            <h3 className="text-xl font-bold mb-3 dark:text-white">{step.title}</h3>
-            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{step.description}</p>
+            <h3 className="text-2xl font-bold mb-3 text-gray-900">{step.title}</h3>
+            <p className="text-gray-600 text-sm leading-relaxed max-w-[270px]">{step.description}</p>
           </div>
         ))}
       </div>
