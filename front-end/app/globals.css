@@ -2,7 +2,14 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0b1220;
+  --surface: #ffffff;
+  --surface-muted: #f7f7f9;
+  --color-primary: #d20b5c;
+  --color-primary-strong: #b0094f;
+  --color-secondary: #128a1a;
+  --color-accent: #1fa629;
+  --color-border: #e5e7eb;
 }
 
 @theme inline {
@@ -12,15 +19,98 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root.dark {
+  --background: #070b14;
+  --foreground: #e5edf8;
+  --surface: #0f172a;
+  --surface-muted: #111d35;
+  --color-primary: #f5428d;
+  --color-primary-strong: #de2c76;
+  --color-secondary: #22c55e;
+  --color-accent: #34d399;
+  --color-border: #23324f;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), "Segoe UI", sans-serif;
+  background-image: none;
+  background-attachment: fixed;
+}
+
+:root.dark body {
+  background-image:
+    radial-gradient(circle at 8% 0%, color-mix(in oklab, var(--color-primary) 22%, transparent), transparent 36%),
+    radial-gradient(circle at 92% 8%, color-mix(in oklab, var(--color-accent) 18%, transparent), transparent 34%);
+}
+
+.page-shell {
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.surface-card {
+  background: var(--surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 20px 42px -28px rgba(11, 18, 32, 0.26);
+}
+
+.sporty-stripes {
+  background-image: none;
+}
+
+:root.dark .sporty-stripes {
+  background-image:
+    linear-gradient(135deg, color-mix(in oklab, var(--color-primary) 16%, transparent) 0 8%, transparent 8% 16%, color-mix(in oklab, var(--color-accent) 14%, transparent) 16% 24%, transparent 24% 100%);
+  background-size: 180px 180px;
+}
+
+.route-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  z-index: 80;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.route-progress.is-active {
+  animation: routeProgress 620ms ease-out forwards;
+}
+
+.route-fade-in {
+  animation: routeFadeIn 340ms ease-out;
+}
+
+@keyframes routeProgress {
+  0% {
+    width: 0;
+    opacity: 0.15;
+  }
+  18% {
+    opacity: 1;
+  }
+  82% {
+    width: 86%;
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes routeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
