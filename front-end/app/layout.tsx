@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GlobalBackButton } from "@/components/common/GlobalBackButton";
+import { RouteTransition } from "@/components/common/RouteTransition";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,7 +32,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <GlobalBackButton />
+        <RouteTransition>{children}</RouteTransition>
       </body>
     </html>
   );
