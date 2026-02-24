@@ -55,3 +55,18 @@ class Client(db.Model, SerializerMixin):
 
     bookings = db.relationship("Booking", back_populates="client")
     teams = db.relationship("Team", back_populates="owner")
+
+class Turf(db.Model, SerializerMixin):
+    __tablename__ = "turfs"
+    
+    # Don't re-serialize the admin or the lists of games/bookings in a simple list view
+    serialize_rules = ('-admin', '-games.turf', '-bookings.turf')
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    admin_id = db.Column(db.String(36), db.ForeignKey("admins.id"))
+    name = db.Column(db.String(100), nullable=False)
+    price_per_hour = db.Column(db.Float, nullable=False)
+
+    admin = db.relationship("Admin", back_populates="turfs")
+    games = db.relationship("Game", back_populates="turf")
+    bookings = db.relationship("Booking", back_populates="turf")    
