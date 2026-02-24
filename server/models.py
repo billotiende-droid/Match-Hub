@@ -105,6 +105,30 @@ class Booking(db.Model, SerializerMixin):
     game = db.relationship("Game", back_populates="bookings")
     transactions = db.relationship("Transaction", back_populates="booking")
 
+class Tournament(db.Model, SerializerMixin):
+    __tablename__ = "tournaments"
+
+    # Rules: 
+    # 1. '-admin.tournaments' -> Stops recursion back to the admin's list of tournaments.
+    # 2. '-games.tournament' -> Stops each game from trying to re-serialize this tournament.
+    # 3. '-team_links.tournament' -> Stops recursion through the many-to-many join table.
+    serialize_rules = ('-admin.tournaments', '-games.tournament', '-team_links.tournament')
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    admin_id = db.Column(db.String(36), db.ForeignKey("admins.id"), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    
+    # Using Enum for PG compatibility (e.g., 'upcoming', 'ongoing', 'completed')
+    status = db.Column(
+        db.Enum('upcoming', 'ongoing', 'completed', 'cancelled', name='tournament_status_types'), 
+        default='upcoming'
+    )
+
+    # Relationships
+    admin = db.relationship("Admin", back_populates="tournaments")
+    games = db.relationship("Game", back_populates="tournament")
+    team_links = db.relationship("TournamentTeam", back_populates="tournament")    
+
 class Team(db.Model, SerializerMixin):
     __tablename__ = "teams"
     
