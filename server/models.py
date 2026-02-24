@@ -87,3 +87,20 @@ class Game(db.Model, SerializerMixin):
     turf = db.relationship("Turf", back_populates="games")
     tournament = db.relationship("Tournament", back_populates="games")
     bookings = db.relationship("Booking", back_populates="game")
+
+class Booking(db.Model, SerializerMixin):
+    __tablename__ = "bookings"
+    
+    # Most important: Stop infinite loops between Client <-> Booking <-> Turf
+    serialize_rules = ('-client.bookings', '-turf.bookings', '-game.bookings', '-transactions.booking')
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    client_id = db.Column(db.String(36), db.ForeignKey("clients.id"))
+    turf_id = db.Column(db.String(36), db.ForeignKey("turfs.id"))
+    game_id = db.Column(db.String(36), db.ForeignKey("games.id"))
+    status = db.Column(db.Enum('pending', 'confirmed', 'cancelled', name='booking_status_types'), default='pending')
+
+    client = db.relationship("Client", back_populates="bookings")
+    turf = db.relationship("Turf", back_populates="bookings")
+    game = db.relationship("Game", back_populates="bookings")
+    transactions = db.relationship("Transaction", back_populates="booking")
