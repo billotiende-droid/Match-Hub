@@ -30,8 +30,15 @@ export const Navbar = () => {
   return (
     <nav className="sticky top-0 z-40 flex items-center justify-between px-6 md:px-10 py-4 border-b border-[var(--color-border)] bg-white">
       <Link href="/" className="flex items-center gap-3 text-gray-900">
-        <div className="w-9 h-9 bg-[var(--color-secondary)] rounded-full flex items-center justify-center shadow-sm">
-          <div className="w-4 h-4 rounded-full border-2 border-white" />
+        <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-sm">
+          <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#006600" stroke="#DC143C" strokeWidth="2" />
+            <path d="M12 2C12 2 5 6 5 12C5 17 9 21 12 22C15 21 19 17 19 12C19 6 12 2 12 2Z" fill="#22c55e" stroke="#ffffff" strokeWidth="1.5" />
+            <path d="M2 12H22" stroke="#ffffff" strokeWidth="1.5" />
+            <path d="M5.5 5.5L18.5 18.5" stroke="#ffffff" strokeWidth="1.5" />
+            <path d="M18.5 5.5L5.5 18.5" stroke="#ffffff" strokeWidth="1.5" />
+            <circle cx="12" cy="12" r="2" fill="#ffffff" />
+          </svg>
         </div>
         <span className="font-bold text-lg tracking-tight">Match Hub</span>
       </Link>
