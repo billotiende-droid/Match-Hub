@@ -129,15 +129,26 @@ class Tournament(db.Model, SerializerMixin):
     games = db.relationship("Game", back_populates="tournament")
     team_links = db.relationship("TournamentTeam", back_populates="tournament")    
 
-class Team(db.Model, SerializerMixin):
-    __tablename__ = "teams"
     
-    # Don't need to see the owner's full history when looking at a team
-    serialize_rules = ('-owner.teams', '-tournament_links.team')
+class TournamentTeam(db.Model, SerializerMixin):
+    __tablename__ = "tournament_teams"
+
+    # Rules:
+    # 1. '-tournament.team_links' -> When looking at a team's tournaments, 
+    #    don't list every other team in that tournament.
+    # 2. '-team.tournament_links' -> When looking at a tournament's teams, 
+    #    don't list every other tournament those teams are in.
+    serialize_rules = ('-tournament.team_links', '-team.tournament_links')
 
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    name = db.Column(db.String(100), nullable=False)
-    client_id = db.Column(db.String(36), db.ForeignKey("clients.id"))
+    tournament_id = db.Column(db.String(36), db.ForeignKey("tournaments.id"), nullable=False)
+    team_id = db.Column(db.String(36), db.ForeignKey("teams.id"), nullable=False)
 
-    owner = db.relationship("Client", back_populates="teams")
-    tournament_links = db.relationship("TournamentTeam", back_populates="team")
+    # Relationships
+    tournament = db.relationship("Tournament", back_populates="team_links")
+    team = db.relationship("Team", back_populates="tournament_links")
+
+    # PostgreSQL compatible constraint to prevent duplicate entries
+    __table_args__ = (
+        UniqueConstraint('tournament_id', 'team_id', name='uq_tournament_team'),
+    )
