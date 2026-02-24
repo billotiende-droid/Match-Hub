@@ -55,14 +55,14 @@ export default function SignupPage() {
 
   return (
     <main className="relative min-h-screen overflow-hidden text-gray-900 dark:text-white flex items-center justify-center p-6">
-      <div className="absolute inset-0 bg-white dark:hidden" />
       <div
-        className="hidden dark:block absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-left md:bg-center"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1459865264687-595d652de67e?q=80&w=2000&auto=format&fit=crop')",
         }}
       />
+      <div className="absolute inset-0 bg-white/70 dark:hidden" />
       <div className="hidden dark:block absolute inset-0 bg-[linear-gradient(120deg,rgba(8,18,36,0.7)_0%,rgba(8,26,56,0.58)_45%,rgba(6,14,29,0.72)_100%)]" />
       <div className="absolute inset-0 opacity-15 dark:opacity-30 [background-image:linear-gradient(to_right,rgba(148,163,184,.16)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.16)_1px,transparent_1px)] [background-size:30px_30px]" />
 
