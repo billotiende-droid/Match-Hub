@@ -25,7 +25,7 @@ export const Hero = () => (
           Book. Play. Compete. Win.
         </h1>
         <p className="text-lg md:text-xl text-white/90 max-w-xl leading-relaxed">
-              Find the perfect turf for your next game! <MapPin className="inline-block align-[-2px] text-[#f87287] fill-[#f87171]" size={28} /> Find a turf near you.
+              Find the perfect turf for your next game! <MapPin className="inline-block align-[-2px] text-[#e4354f] fill-[#df1d1d]" size={28} /> Find a turf near you.
         </p>
         <div className="flex flex-wrap gap-4 pt-3">
           <Link href="/turfs" className="bg-[var(--color-primary)] text-white px-7 py-3.5 rounded-xl font-semibold tracking-wide flex items-center gap-2 hover:bg-[var(--color-primary-strong)] transition-all shadow-lg">
