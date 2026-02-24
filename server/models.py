@@ -55,6 +55,7 @@ class Client(db.Model, SerializerMixin):
 
     bookings = db.relationship("Booking", back_populates="client")
     teams = db.relationship("Team", back_populates="owner")
+    notifications = db.relationship("Notification", back_populates="client", cascade="all, delete-orphan")
 
 class Turf(db.Model, SerializerMixin):
     __tablename__ = "turfs"
@@ -196,4 +197,25 @@ class Review(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationship
-    booking = db.relationship("Booking", back_populates="review")      
+    booking = db.relationship("Booking", back_populates="review") 
+
+class Notification(db.Model, SerializerMixin):
+    __tablename__ = "notifications"
+
+    # Rules:
+    # 1. '-client.notifications' -> Prevents the client object from listing 
+    #    ALL their notifications again when viewing a single notification.
+    serialize_rules = ('-client.notifications',)
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    
+    # Foreign Key to the Client receiving the notification
+    client_id = db.Column(db.String(36), db.ForeignKey("clients.id"), nullable=False)
+    
+    title = db.Column(db.String(150), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    is_read = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Relationship back to Client
+    client = db.relationship("Client", back_populates="notifications")
