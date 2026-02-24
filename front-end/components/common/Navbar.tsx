@@ -5,20 +5,19 @@ import { useRouter } from 'next/navigation';
 import { Moon, Sun } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { clearAuthSession, getAuthSession, type AuthSession } from '@/services/authService';
-import { applyTheme, getTheme, initTheme, subscribeTheme, type ThemeMode } from '@/services/themeService';
+import { applyTheme, getTheme, initTheme } from '@/services/themeService';
 
 export const Navbar = () => {
   const router = useRouter();
-  const [theme, setTheme] = useState<ThemeMode>(() => getTheme());
   const [session, setSession] = useState<AuthSession | null>(() => getAuthSession());
 
   useEffect(() => {
     initTheme();
-    return subscribeTheme((nextTheme) => setTheme(nextTheme));
   }, []);
 
   const toggleTheme = () => {
-    const nextTheme: ThemeMode = theme === "dark" ? "light" : "dark";
+    const currentTheme = getTheme();
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
     applyTheme(nextTheme);
   };
 
@@ -49,11 +48,8 @@ export const Navbar = () => {
           className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white"
           aria-label="Toggle theme"
         >
-          {theme === "dark" ? (
-            <Moon size={20} className="text-[var(--foreground)]" />
-          ) : (
-            <Sun size={20} className="text-[var(--color-accent)]" />
-          )}
+          <Moon size={20} className="hidden dark:block text-[var(--foreground)]" />
+          <Sun size={20} className="block dark:hidden text-[var(--color-accent)]" />
         </button>
         {session ? (
           <>
