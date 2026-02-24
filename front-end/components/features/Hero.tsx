@@ -9,10 +9,10 @@ export const Hero = () => (
       className="absolute inset-0 bg-cover bg-center"
       style={{
         backgroundImage:
-          "url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1600&q=80')",
+          "url('https://i.pinimg.com/1200x/44/71/07/4471074a4dc2b299e496e1ca0021cbb9.jpg')",
       }}
     />
-    <div className="absolute inset-0 bg-gradient-to-b from-[#006600]/88 to-[#00aa00]/86" />
+    <div className="absolute inset-0 bg-gradient-to-b from-[#006600]/65 to-[#00aa00]/60" />
     <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(to_right,rgba(255,255,255,.16)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,.16)_1px,transparent_1px)] [background-size:44px_44px]" />
 
     <div className="container mx-auto px-6 grid lg:grid-cols-2 gap-10 items-center relative z-10">
