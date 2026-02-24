@@ -1,7 +1,7 @@
 // src/components/features/Hero.tsx
 import Image from 'next/image';
 import Link from 'next/link';
-import { Calendar, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronRight, MapPin } from 'lucide-react';
 
 export const Hero = () => (
   <section className="relative pt-14 pb-24 overflow-hidden text-white">
@@ -25,7 +25,7 @@ export const Hero = () => (
           Book. Play. Compete. Win.
         </h1>
         <p className="text-lg md:text-xl text-white/90 max-w-xl leading-relaxed">
-          Find the perfect turf for your next game! Location Icon: Find a turf near you.
+              Find the perfect turf for your next game! <MapPin className="inline-block align-[-2px] text-[#f87287] fill-[#f87171]" size={28} /> Find a turf near you.
         </p>
         <div className="flex flex-wrap gap-4 pt-3">
           <Link href="/turfs" className="bg-[var(--color-primary)] text-white px-7 py-3.5 rounded-xl font-semibold tracking-wide flex items-center gap-2 hover:bg-[var(--color-primary-strong)] transition-all shadow-lg">
