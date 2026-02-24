@@ -176,4 +176,24 @@ class Transaction(db.Model, SerializerMixin):
     timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Relationship
-    booking = db.relationship("Booking", back_populates="transactions")    
+    booking = db.relationship("Booking", back_populates="transactions")  
+
+class Review(db.Model, SerializerMixin):
+    __tablename__ = "reviews"
+
+    # Rules:
+    # 1. '-booking.review' -> Stops the booking from trying to re-serialize this review.
+    # 2. '-booking.client' -> Keeps the review object clean by not nesting the user who wrote it twice.
+    serialize_rules = ('-booking.review',)
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    
+    # unique=True ensures one booking cannot have multiple reviews
+    booking_id = db.Column(db.String(36), db.ForeignKey("bookings.id"), unique=True, nullable=False)
+    
+    rating = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Relationship
+    booking = db.relationship("Booking", back_populates="review")      
