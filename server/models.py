@@ -104,3 +104,16 @@ class Booking(db.Model, SerializerMixin):
     turf = db.relationship("Turf", back_populates="bookings")
     game = db.relationship("Game", back_populates="bookings")
     transactions = db.relationship("Transaction", back_populates="booking")
+
+class Team(db.Model, SerializerMixin):
+    __tablename__ = "teams"
+    
+    # Don't need to see the owner's full history when looking at a team
+    serialize_rules = ('-owner.teams', '-tournament_links.team')
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    name = db.Column(db.String(100), nullable=False)
+    client_id = db.Column(db.String(36), db.ForeignKey("clients.id"))
+
+    owner = db.relationship("Client", back_populates="teams")
+    tournament_links = db.relationship("TournamentTeam", back_populates="team")
