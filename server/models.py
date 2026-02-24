@@ -18,3 +18,25 @@ db = SQLAlchemy(metadata=metadata)
 
 def generate_uuid():
     return str(uuid.uuid4())
+
+class Admin(db.Model):
+    __tablename__ = "admins"
+    
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    full_name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    phone = db.Column(db.String(20))
+    password_hash = db.Column(db.String(255), nullable=False)
+    
+    # Updated Role Column using Enum for PostgreSQL compatibility
+    role = db.Column(
+        db.Enum('super_admin', 'owner', 'manager', 'staff', name='admin_role_types'), 
+        nullable=False, 
+        default='staff'
+    )
+    
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    turfs = db.relationship("Turf", back_populates="admin")
+    tournaments = db.relationship("Tournament", back_populates="admin")
