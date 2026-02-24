@@ -37,15 +37,15 @@ export const Hero = () => (
         </div>
       </div>
 
-      <div className="relative group max-w-xl ml-auto">
-        <div className="absolute -inset-3 bg-[var(--color-primary)] rounded-[28px] rotate-4 opacity-90 -z-20 transition-transform duration-500 group-hover:rotate-2" />
-        <div className="absolute -inset-2 bg-black rounded-[28px] -rotate-2 opacity-90 -z-10 transition-transform duration-500 group-hover:-rotate-1" />
-        <div className="relative rounded-[26px] overflow-hidden border-[6px] border-white/10 shadow-2xl h-[300px] md:h-[340px]">
+      <div className="relative group w-full max-w-lg lg:max-w-xl mx-auto lg:ml-auto">
+        <div className="absolute -inset-2 sm:-inset-3 bg-[var(--color-primary)] rounded-[26px] sm:rounded-[28px] rotate-2 sm:rotate-4 opacity-90 -z-20 transition-transform duration-500 group-hover:rotate-1 sm:group-hover:rotate-2" />
+        <div className="absolute -inset-1.5 sm:-inset-2 bg-black rounded-[26px] sm:rounded-[28px] -rotate-1 sm:-rotate-2 opacity-90 -z-10 transition-transform duration-500 group-hover:-rotate-0.5 sm:group-hover:-rotate-1" />
+        <div className="relative rounded-[24px] sm:rounded-[26px] overflow-hidden border-[4px] sm:border-[6px] border-white/10 shadow-2xl aspect-[4/3] sm:aspect-[16/10]">
           <Image
-            src="https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=900&q=80"
+            src="https://i.pinimg.com/736x/6f/90/4d/6f904db22d2c59197432eca70ee68c2c.jpg"
             alt="Soccer Action"
             fill
-            sizes="(max-width: 1024px) 100vw, 520px"
+            sizes="(max-width: 640px) 92vw, (max-width: 1024px) 70vw, 520px"
             className="object-cover"
             priority
           />
