@@ -70,3 +70,20 @@ class Turf(db.Model, SerializerMixin):
     admin = db.relationship("Admin", back_populates="turfs")
     games = db.relationship("Game", back_populates="turf")
     bookings = db.relationship("Booking", back_populates="turf")    
+
+class Game(db.Model, SerializerMixin):
+    __tablename__ = "games"
+    
+    # Prevent deep nesting of turf details or tournament details inside a game
+    serialize_rules = ('-turf.games', '-tournament.games', '-bookings.game')
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    turf_id = db.Column(db.String(36), db.ForeignKey("turfs.id"))
+    tournament_id = db.Column(db.String(36), db.ForeignKey("tournaments.id"))
+    title = db.Column(db.String(100))
+    game_date = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.Enum('open', 'full', 'cancelled', 'completed', name='game_status_types'), default='open')
+
+    turf = db.relationship("Turf", back_populates="games")
+    tournament = db.relationship("Tournament", back_populates="games")
+    bookings = db.relationship("Booking", back_populates="game")
