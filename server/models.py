@@ -129,7 +129,7 @@ class Tournament(db.Model, SerializerMixin):
     games = db.relationship("Game", back_populates="tournament")
     team_links = db.relationship("TournamentTeam", back_populates="tournament")    
 
-    
+
 class TournamentTeam(db.Model, SerializerMixin):
     __tablename__ = "tournament_teams"
 
@@ -152,3 +152,28 @@ class TournamentTeam(db.Model, SerializerMixin):
     __table_args__ = (
         UniqueConstraint('tournament_id', 'team_id', name='uq_tournament_team'),
     )
+
+class Transaction(db.Model, SerializerMixin):
+    __tablename__ = "transactions"
+
+    # Rules:
+    # 1. '-booking.transactions' -> Prevents the booking from listing all its 
+    #    transactions again when you are viewing a single transaction.
+    # 2. '-booking.client' -> (Optional) Keeps the transaction response slim 
+    #    by not nesting the full client details through the booking.
+    serialize_rules = ('-booking.transactions',)
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    booking_id = db.Column(db.String(36), db.ForeignKey("bookings.id"), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    
+    # Using Enum for PG compatibility (e.g., 'pending', 'completed', 'failed', 'refunded')
+    status = db.Column(
+        db.Enum('pending', 'completed', 'failed', 'refunded', name='transaction_status_types'), 
+        default='pending'
+    )
+    
+    timestamp = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Relationship
+    booking = db.relationship("Booking", back_populates="transactions")    
