@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData, Enum, UniqueConstraint, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy_serializer import SerializerMixin
 
 # Essential for PostgreSQL migrations to avoid "unnamed constraint" errors
 convention = {
@@ -19,7 +20,7 @@ db = SQLAlchemy(metadata=metadata)
 def generate_uuid():
     return str(uuid.uuid4())
 
-class Admin(db.Model):
+class Admin(db.Model, SerializerMixin):
     __tablename__ = "admins"
     
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -40,3 +41,17 @@ class Admin(db.Model):
 
     turfs = db.relationship("Turf", back_populates="admin")
     tournaments = db.relationship("Tournament", back_populates="admin")
+
+class Client(db.Model, SerializerMixin):
+    __tablename__ = "clients"
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    full_name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    phone = db.Column(db.String(20))
+    password_hash = db.Column(db.String(255), nullable=False)
+    # Native PG Enum name='skill_level_types'
+    skill_level = db.Column(db.Enum('beginner', 'intermediate', 'advanced', name='skill_level_types'))
+    is_verified = db.Column(db.Boolean, default=False)
+
+    bookings = db.relationship("Booking", back_populates="client")
+    teams = db.relationship("Team", back_populates="owner")
