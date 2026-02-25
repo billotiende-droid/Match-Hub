@@ -31,10 +31,10 @@ export const GlobalBackButton = () => {
       onClick={handleBack}
       disabled={isDisabled}
       aria-label="Go back"
-      className="fixed left-4 top-20 z-50 inline-flex items-center gap-2 rounded-full bg-transparent px-3 py-2 text-sm font-black text-[var(--foreground)] transition-all hover:bg-white/95 hover:px-4 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-[var(--surface)]/95"
+      className="fixed left-3 top-16 sm:left-4 sm:top-20 z-50 inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-white/85 dark:bg-[var(--surface)]/85 px-3 py-2 text-xs sm:text-sm font-black text-[var(--foreground)] transition-all hover:bg-white hover:px-4 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-[var(--surface)]"
     >
       <ArrowLeft size={16} />
-      <span className="inline">Back</span>
+      <span className="hidden sm:inline">Back</span>
     </button>
   );
 };
