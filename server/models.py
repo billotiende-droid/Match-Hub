@@ -130,6 +130,17 @@ class Tournament(db.Model, SerializerMixin):
     games = db.relationship("Game", back_populates="tournament")
     team_links = db.relationship("TournamentTeam", back_populates="tournament")    
 
+class Team(db.Model, SerializerMixin):
+    __tablename__ = "teams"
+    serialize_rules = ('-owner.teams', '-tournament_links.team')
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    name = db.Column(db.String(100), nullable=False)
+    client_id = db.Column(db.String(36), db.ForeignKey("clients.id"))
+
+    owner = db.relationship("Client", back_populates="teams")
+    tournament_links = db.relationship("TournamentTeam", back_populates="team")    
+
 
 class TournamentTeam(db.Model, SerializerMixin):
     __tablename__ = "tournament_teams"
