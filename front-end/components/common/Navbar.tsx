@@ -3,13 +3,18 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Menu, Moon, Sun, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
-import { clearAuthSession, getAuthSession, type AuthSession } from '@/services/authService';
-import { applyTheme, getTheme, initTheme } from '@/services/themeService';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import { clearAuthSession, getAuthSession, subscribeAuthSession } from '@/services/authService';
+import { applyTheme, getTheme, initTheme, subscribeTheme } from '@/services/themeService';
 
 export const Navbar = () => {
   const router = useRouter();
-  const [session, setSession] = useState<AuthSession | null>(() => getAuthSession());
+  const session = useSyncExternalStore(subscribeAuthSession, getAuthSession, () => null);
+  const theme = useSyncExternalStore(
+    (onStoreChange) => subscribeTheme(() => onStoreChange()),
+    getTheme,
+    () => "light"
+  );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
@@ -23,14 +28,12 @@ export const Navbar = () => {
   }, []);
 
   const toggleTheme = () => {
-    const currentTheme = getTheme();
-    const nextTheme = currentTheme === "dark" ? "light" : "dark";
+    const nextTheme = theme === "dark" ? "light" : "dark";
     applyTheme(nextTheme);
   };
 
   const handleLogout = () => {
     clearAuthSession();
-    setSession(null);
     setMobileMenuOpen(false);
     router.push("/");
   };
@@ -59,7 +62,7 @@ export const Navbar = () => {
             className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white dark:bg-[var(--surface)]"
             aria-label="Toggle theme"
           >
-            {getTheme() === "dark" ? (
+            {theme === "dark" ? (
               <Moon size={20} className="text-[var(--foreground)]" />
             ) : (
               <Sun size={20} className="text-[var(--color-accent)]" />
@@ -98,7 +101,7 @@ export const Navbar = () => {
             className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white dark:bg-[var(--surface)]"
             aria-label="Toggle theme"
           >
-            {getTheme() === "dark" ? (
+            {theme === "dark" ? (
               <Moon size={18} className="text-[var(--foreground)]" />
             ) : (
               <Sun size={18} className="text-[var(--color-accent)]" />
@@ -166,4 +169,3 @@ export const Navbar = () => {
     </>
   );
 };
-
