@@ -22,37 +22,37 @@ export default async function TurfDetailPage({ params }: TurfDetailPageProps) {
     <main className="page-shell">
       <Navbar />
 
-      <section className="container mx-auto px-6 py-12">
-        <Link href="/turfs" className="text-[var(--color-primary)] font-bold hover:underline">
+      <section className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <Link href="/turfs" className="text-sm sm:text-base text-[var(--color-primary)] font-bold hover:underline">
           Back to Turfs
         </Link>
 
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+        <div className="mt-5 sm:mt-6 grid grid-cols-1 lg:grid-cols-2 gap-7 sm:gap-10 items-start">
           <img
             src={turf.image}
             alt={turf.name}
-            className="w-full h-[420px] object-cover rounded-3xl border border-[var(--color-border)] shadow-lg"
+            className="w-full h-64 sm:h-80 lg:h-[420px] object-cover rounded-3xl border border-[var(--color-border)] shadow-lg"
           />
 
           <div>
-            <h1 className="text-4xl font-black text-gray-900 dark:text-white mb-3">{turf.name}</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-3">{turf.name}</h1>
             <p className="text-gray-500 dark:text-gray-400 mb-5">{turf.location}</p>
-            <p className="text-2xl font-bold text-[var(--color-primary)] mb-6">KES {turf.pricePerHour} / hour</p>
+            <p className="text-xl sm:text-2xl font-bold text-[var(--color-primary)] mb-6">KES {turf.pricePerHour} / hour</p>
 
             <div className="mb-8">
-              <h2 className="font-bold text-lg mb-3">Facilities</h2>
+              <h2 className="font-bold text-lg mb-3">Amenities</h2>
               <div className="flex flex-wrap gap-2">
-                {turf.facilities.length > 0 ? (
-                  turf.facilities.map((facility) => (
+                {turf.amenities.length > 0 ? (
+                  turf.amenities.map((amenity) => (
                     <span
-                      key={facility}
-                      className="px-3 py-1 rounded-full text-sm bg-[var(--surface-muted)] dark:bg-gray-800 border border-[var(--color-border)]"
+                      key={amenity}
+                      className="px-3 py-1 rounded-full text-sm bg-[var(--surface-muted)] dark:bg-[var(--surface-muted)] border border-[var(--color-border)]"
                     >
-                      {facility}
+                      {amenity}
                     </span>
                   ))
                 ) : (
-                  <span className="text-gray-500">No facilities listed yet.</span>
+                  <span className="text-gray-500">No amenities listed yet.</span>
                 )}
               </div>
             </div>
