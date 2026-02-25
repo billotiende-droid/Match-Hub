@@ -2,14 +2,16 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #0b1220;
+  --foreground: #111827;
   --surface: #ffffff;
-  --surface-muted: #f7f7f9;
-  --color-primary: #d20b5c;
-  --color-primary-strong: #b0094f;
-  --color-secondary: #128a1a;
-  --color-accent: #1fa629;
+  --surface-muted: #f9fafb;
+  --color-primary: #dc143c;
+  --color-primary-strong: #bb0000;
+  --color-secondary: #006600;
+  --color-accent: #00aa00;
   --color-border: #e5e7eb;
+  --color-black: #000000;
+  --color-black-soft: #1a1a1a;
 }
 
 @theme inline {
@@ -20,15 +22,17 @@
 }
 
 :root.dark {
-  --background: #070b14;
-  --foreground: #e5edf8;
-  --surface: #0f172a;
-  --surface-muted: #111d35;
-  --color-primary: #f5428d;
-  --color-primary-strong: #de2c76;
-  --color-secondary: #22c55e;
-  --color-accent: #34d399;
-  --color-border: #23324f;
+  --background: #111827;
+  --foreground: #ffffff;
+  --surface: #1f2937;
+  --surface-muted: #1f2937;
+  --color-primary: #dc143c;
+  --color-primary-strong: #bb0000;
+  --color-secondary: #006600;
+  --color-accent: #00aa00;
+  --color-border: #374151;
+  --color-black: #000000;
+  --color-black-soft: #000000;
 }
 
 body {
@@ -40,9 +44,7 @@ body {
 }
 
 :root.dark body {
-  background-image:
-    radial-gradient(circle at 8% 0%, color-mix(in oklab, var(--color-primary) 22%, transparent), transparent 36%),
-    radial-gradient(circle at 92% 8%, color-mix(in oklab, var(--color-accent) 18%, transparent), transparent 34%);
+  background-image: none;
 }
 
 .page-shell {

@@ -5,20 +5,19 @@ import { useRouter } from 'next/navigation';
 import { Moon, Sun } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { clearAuthSession, getAuthSession, type AuthSession } from '@/services/authService';
-import { applyTheme, getTheme, initTheme, subscribeTheme, type ThemeMode } from '@/services/themeService';
+import { applyTheme, getTheme, initTheme } from '@/services/themeService';
 
 export const Navbar = () => {
   const router = useRouter();
-  const [theme, setTheme] = useState<ThemeMode>(() => getTheme());
   const [session, setSession] = useState<AuthSession | null>(() => getAuthSession());
 
   useEffect(() => {
     initTheme();
-    return subscribeTheme((nextTheme) => setTheme(nextTheme));
   }, []);
 
   const toggleTheme = () => {
-    const nextTheme: ThemeMode = theme === "dark" ? "light" : "dark";
+    const currentTheme = getTheme();
+    const nextTheme = currentTheme === "dark" ? "light" : "dark";
     applyTheme(nextTheme);
   };
 
@@ -29,15 +28,22 @@ export const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-40 flex items-center justify-between px-6 md:px-10 py-3 border-b border-[var(--color-border)] bg-white/95 backdrop-blur-md">
-      <Link href="/" className="flex items-center gap-3">
-        <div className="w-9 h-9 bg-[var(--color-secondary)] rounded-full flex items-center justify-center shadow-sm">
-          <div className="w-4 h-4 border-2 border-white rounded-sm rotate-45" />
+    <nav className="sticky top-0 z-40 flex items-center justify-between px-6 md:px-10 py-4 border-b border-[var(--color-border)] bg-white">
+      <Link href="/" className="flex items-center gap-3 text-gray-900">
+        <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-sm">
+          <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" fill="#006600" stroke="#DC143C" strokeWidth="2" />
+            <path d="M12 2C12 2 5 6 5 12C5 17 9 21 12 22C15 21 19 17 19 12C19 6 12 2 12 2Z" fill="#22c55e" stroke="#ffffff" strokeWidth="1.5" />
+            <path d="M2 12H22" stroke="#ffffff" strokeWidth="1.5" />
+            <path d="M5.5 5.5L18.5 18.5" stroke="#ffffff" strokeWidth="1.5" />
+            <path d="M18.5 5.5L5.5 18.5" stroke="#ffffff" strokeWidth="1.5" />
+            <circle cx="12" cy="12" r="2" fill="#ffffff" />
+          </svg>
         </div>
-        <span className="font-bold text-xl tracking-tight">Match Hub</span>
+        <span className="font-bold text-lg tracking-tight">Match Hub</span>
       </Link>
 
-      <div className="hidden md:flex items-center gap-8 text-gray-600 font-medium">
+      <div className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
         <Link href="/turfs" className="hover:text-[var(--color-primary)] transition-colors">Turfs</Link>
         <Link href="/games" className="hover:text-[var(--color-primary)] transition-colors">Games</Link>
         <Link href="/tournaments" className="hover:text-[var(--color-primary)] transition-colors">Tournaments</Link>
@@ -49,11 +55,8 @@ export const Navbar = () => {
           className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white"
           aria-label="Toggle theme"
         >
-          {theme === "dark" ? (
-            <Moon size={20} className="text-[var(--foreground)]" />
-          ) : (
-            <Sun size={20} className="text-[var(--color-accent)]" />
-          )}
+          <Moon size={20} className="hidden dark:block text-[var(--foreground)]" />
+          <Sun size={20} className="block dark:hidden text-[var(--color-accent)]" />
         </button>
         {session ? (
           <>
@@ -71,7 +74,7 @@ export const Navbar = () => {
           <>
             <Link
               href="/login"
-              className="border border-[var(--color-secondary)] text-[var(--color-secondary)] px-5 py-2 rounded-xl font-semibold hover:bg-[var(--color-secondary)] hover:text-white transition-colors"
+              className="text-gray-700 font-semibold hover:text-[var(--color-primary)] transition-colors"
             >
               Login
             </Link>
