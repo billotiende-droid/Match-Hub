@@ -15,8 +15,8 @@ export interface AvailabilityResponse {
 
 interface CreateBookingPayload {
   turfId: string;
-  userId: string;
-  date: string;
+  clientId: string;
+  bookingDate: string;
   startTime: string;
   endTime: string;
   notes?: string;
@@ -25,13 +25,13 @@ interface CreateBookingPayload {
 interface CreateBookingResponse {
   id: string;
   turf_id: string;
-  user_id: string;
-  date: string;
+  client_id: string;
+  booking_date: string;
   start_time: string;
   end_time: string;
   total_amount: number;
-  status: string;
-  notes?: string;
+  status: "pending" | "confirmed" | "cancelled" | "completed";
+  payment_status: "unpaid" | "paid" | "refunded";
 }
 
 export type UserBooking = CreateBookingResponse;
@@ -39,7 +39,7 @@ export type UserBooking = CreateBookingResponse;
 interface StkPushResponse {
   message: string;
   booking_id: string;
-  payment_status: string;
+  payment_status: "pending" | "completed" | "failed";
   merchant_request_id?: string;
   checkout_request_id?: string;
   response_code?: string;
@@ -68,11 +68,11 @@ export const createBooking = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-User-Id": payload.userId,
+      "X-User-Id": payload.clientId,
     },
     body: JSON.stringify({
       turf_id: payload.turfId,
-      date: payload.date,
+      booking_date: payload.bookingDate,
       start_time: payload.startTime,
       end_time: payload.endTime,
       notes: payload.notes,
@@ -80,10 +80,10 @@ export const createBooking = async (
   });
 };
 
-export const getMyBookings = async (userId: string): Promise<UserBooking[]> => {
+export const getMyBookings = async (clientId: string): Promise<UserBooking[]> => {
   return apiRequest<UserBooking[]>("/bookings", {
     headers: {
-      "X-User-Id": userId,
+      "X-User-Id": clientId,
     },
     cache: "no-store",
   });
@@ -91,14 +91,14 @@ export const getMyBookings = async (userId: string): Promise<UserBooking[]> => {
 
 export const initiateStkPush = async (payload: {
   bookingId: string;
-  userId: string;
+  clientId: string;
   phone: string;
 }): Promise<StkPushResponse> => {
   return apiRequest<StkPushResponse>("/payments/stkpush", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-User-Id": payload.userId,
+      "X-User-Id": payload.clientId,
     },
     body: JSON.stringify({
       booking_id: payload.bookingId,
