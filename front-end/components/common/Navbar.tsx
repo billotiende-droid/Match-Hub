@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Moon, Sun } from 'lucide-react';
+import { Menu, Moon, Sun, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { clearAuthSession, getAuthSession, type AuthSession } from '@/services/authService';
 import { applyTheme, getTheme, initTheme } from '@/services/themeService';
@@ -10,6 +10,13 @@ import { applyTheme, getTheme, initTheme } from '@/services/themeService';
 export const Navbar = () => {
   const router = useRouter();
   const [session, setSession] = useState<AuthSession | null>(() => getAuthSession());
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const navLinks = [
+    { href: '/turfs', label: 'Turfs' },
+    { href: '/games', label: 'Games' },
+    { href: '/tournaments', label: 'Tournaments' },
+  ];
 
   useEffect(() => {
     initTheme();
@@ -24,66 +31,139 @@ export const Navbar = () => {
   const handleLogout = () => {
     clearAuthSession();
     setSession(null);
+    setMobileMenuOpen(false);
     router.push("/");
   };
 
   return (
-    <nav className="sticky top-0 z-40 flex items-center justify-between px-6 md:px-10 py-4 border-b border-[var(--color-border)] bg-white">
-      <Link href="/" className="flex items-center gap-3 text-gray-900">
-        <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-sm">
-          <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="10" fill="#006600" stroke="#DC143C" strokeWidth="2" />
-            <path d="M12 2C12 2 5 6 5 12C5 17 9 21 12 22C15 21 19 17 19 12C19 6 12 2 12 2Z" fill="#22c55e" stroke="#ffffff" strokeWidth="1.5" />
-            <path d="M2 12H22" stroke="#ffffff" strokeWidth="1.5" />
-            <path d="M5.5 5.5L18.5 18.5" stroke="#ffffff" strokeWidth="1.5" />
-            <path d="M18.5 5.5L5.5 18.5" stroke="#ffffff" strokeWidth="1.5" />
-            <circle cx="12" cy="12" r="2" fill="#ffffff" />
-          </svg>
+    <>
+      <nav className="sticky top-0 z-40 flex items-center justify-between px-4 sm:px-6 md:px-10 py-3 border-b border-[var(--color-border)] bg-white/95 dark:bg-[var(--surface)]/95 backdrop-blur-md">
+        <Link href="/" className="flex items-center gap-3">
+          <div className="w-9 h-9 bg-[var(--color-secondary)] rounded-full flex items-center justify-center shadow-sm">
+            <div className="w-4 h-4 border-2 border-white rounded-sm rotate-45" />
+          </div>
+          <span className="font-bold text-lg sm:text-xl tracking-tight">Match Hub</span>
+        </Link>
+
+        <div className="hidden md:flex items-center gap-8 text-gray-600 dark:text-gray-300 font-medium">
+          {navLinks.map((link) => (
+            <Link key={link.href} href={link.href} className="hover:text-[var(--color-primary)] transition-colors">
+              {link.label}
+            </Link>
+          ))}
         </div>
-        <span className="font-bold text-lg tracking-tight">Match Hub</span>
-      </Link>
 
-      <div className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
-        <Link href="/turfs" className="hover:text-[var(--color-primary)] transition-colors">Turfs</Link>
-        <Link href="/games" className="hover:text-[var(--color-primary)] transition-colors">Games</Link>
-        <Link href="/tournaments" className="hover:text-[var(--color-primary)] transition-colors">Tournaments</Link>
-      </div>
+        <div className="hidden md:flex items-center gap-3">
+          <button
+            onClick={toggleTheme}
+            className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white dark:bg-[var(--surface)]"
+            aria-label="Toggle theme"
+          >
+            {getTheme() === "dark" ? (
+              <Moon size={20} className="text-[var(--foreground)]" />
+            ) : (
+              <Sun size={20} className="text-[var(--color-accent)]" />
+            )}
+          </button>
+          {session ? (
+            <>
+              <Link href="/dashboard" className="font-medium text-gray-900 dark:text-white max-w-40 truncate">
+                {session.user.name}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="bg-[var(--color-primary)] text-white px-5 py-2 rounded-xl font-semibold hover:bg-[var(--color-primary-strong)] transition"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="border border-[var(--color-secondary)] text-[var(--color-secondary)] px-5 py-2 rounded-xl font-semibold hover:bg-[var(--color-secondary)] hover:text-white transition-colors"
+              >
+                Login
+              </Link>
+              <Link href="/signup" className="bg-[var(--color-primary)] text-white px-5 py-2 rounded-xl font-semibold hover:bg-[var(--color-primary-strong)] transition">
+                Register
+              </Link>
+            </>
+          )}
+        </div>
 
-      <div className="flex items-center gap-4">
-        <button
-          onClick={toggleTheme}
-          className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white"
-          aria-label="Toggle theme"
-        >
-          <Moon size={20} className="hidden dark:block text-[var(--foreground)]" />
-          <Sun size={20} className="block dark:hidden text-[var(--color-accent)]" />
-        </button>
-        {session ? (
-          <>
-            <Link href="/dashboard" className="font-medium text-gray-900 dark:text-white">
-              {session.user.name}
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="bg-[var(--color-primary)] text-white px-5 py-2 rounded-xl font-semibold hover:bg-[var(--color-primary-strong)] transition"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <Link
-              href="/login"
-              className="text-gray-700 font-semibold hover:text-[var(--color-primary)] transition-colors"
-            >
-              Login
-            </Link>
-            <Link href="/signup" className="bg-[var(--color-primary)] text-white px-5 py-2 rounded-xl font-semibold hover:bg-[var(--color-primary-strong)] transition">
-              Register
-            </Link>
-          </>
-        )}
-      </div>
-    </nav>
+        <div className="flex md:hidden items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white dark:bg-[var(--surface)]"
+            aria-label="Toggle theme"
+          >
+            {getTheme() === "dark" ? (
+              <Moon size={18} className="text-[var(--foreground)]" />
+            ) : (
+              <Sun size={18} className="text-[var(--color-accent)]" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white dark:bg-[var(--surface)]"
+            aria-label="Toggle menu"
+            aria-expanded={mobileMenuOpen}
+          >
+            {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          </button>
+        </div>
+      </nav>
+
+      {mobileMenuOpen && (
+        <div className="md:hidden sticky top-[61px] z-30 border-b border-[var(--color-border)] bg-white/95 dark:bg-[var(--surface)]/95 backdrop-blur-md px-4 pb-4 pt-3 space-y-3">
+          <div className="flex flex-col gap-1 text-gray-700 dark:text-gray-200 font-semibold">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-2 py-2 rounded-lg hover:bg-[var(--surface-muted)] dark:hover:bg-[var(--surface-muted)]"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {session ? (
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-2 py-2 rounded-lg font-semibold text-gray-900 dark:text-white hover:bg-[var(--surface-muted)] dark:hover:bg-[var(--surface-muted)]"
+              >
+                {session.user.name}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full bg-[var(--color-primary)] text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-[var(--color-primary-strong)] transition"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/login"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-center border border-[var(--color-secondary)] text-[var(--color-secondary)] px-4 py-2.5 rounded-xl font-semibold hover:bg-[var(--color-secondary)] hover:text-white transition-colors"
+              >
+                Login
+              </Link>
+              <Link href="/signup" onClick={() => setMobileMenuOpen(false)} className="text-center bg-[var(--color-primary)] text-white px-4 py-2.5 rounded-xl font-semibold hover:bg-[var(--color-primary-strong)] transition">
+                Register
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+    </>
   );
 };
+
