@@ -14,7 +14,8 @@ migrate = Migrate(app, db)
 api = Api(app)
 
 
-
+# Note: Import your Resource classes here to add routes later
+# api.add_resource(YourResource, '/endpoint')
 
 
 if __name__ == '__main__':
