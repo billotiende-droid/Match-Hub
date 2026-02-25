@@ -32,7 +32,6 @@ export interface AuthSession {
 const AUTH_STORAGE_KEY = "matchhub_auth_session";
 const CLIENT_ID_STORAGE_KEY = "matchhub_client_id";
 const LEGACY_USER_ID_STORAGE_KEY = "matchhub_user_id";
-const AUTH_EVENT_NAME = "matchhub-auth-session-change";
 
 export const signup = async (payload: {
   role: "player" | "turf_owner" | "admin";
@@ -138,7 +137,6 @@ export const saveAuthSession = (session: AuthSession) => {
   window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
   window.localStorage.setItem(CLIENT_ID_STORAGE_KEY, session.user.id);
   window.localStorage.setItem(LEGACY_USER_ID_STORAGE_KEY, session.user.id);
-  window.dispatchEvent(new Event(AUTH_EVENT_NAME));
 };
 
 export const getAuthSession = (): AuthSession | null => {
@@ -161,17 +159,4 @@ export const clearAuthSession = () => {
   window.localStorage.removeItem(AUTH_STORAGE_KEY);
   window.localStorage.removeItem(CLIENT_ID_STORAGE_KEY);
   window.localStorage.removeItem(LEGACY_USER_ID_STORAGE_KEY);
-  window.dispatchEvent(new Event(AUTH_EVENT_NAME));
-};
-
-export const subscribeAuthSession = (listener: () => void) => {
-  if (typeof window === "undefined") return () => {};
-
-  window.addEventListener(AUTH_EVENT_NAME, listener);
-  window.addEventListener("storage", listener);
-
-  return () => {
-    window.removeEventListener(AUTH_EVENT_NAME, listener);
-    window.removeEventListener("storage", listener);
-  };
 };
