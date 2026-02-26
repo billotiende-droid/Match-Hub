@@ -104,3 +104,37 @@ export const getTurfById = async (id: string): Promise<Turf | null> => {
     return null;
   }
 };
+
+export interface CreateTurfPayload {
+  name: string;
+  location: string;
+  pricePerHour: number;
+  description?: string;
+  openingTime?: string;
+  closingTime?: string;
+  images?: string[];
+  amenities?: string[];
+  isActive?: boolean;
+}
+
+export const createTurf = async (payload: CreateTurfPayload, adminId: string): Promise<Turf> => {
+  const data = await apiRequest<ApiTurf>("/turfs", {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json",
+      "X-User-Id": adminId,
+    },
+    body: JSON.stringify({
+      name: payload.name,
+      location: payload.location,
+      price_per_hour: payload.pricePerHour,
+      description: payload.description,
+      opening_time: payload.openingTime,
+      closing_time: payload.closingTime,
+      images: payload.images || [],
+      amenities: payload.amenities || [],
+      is_active: payload.isActive ?? true,
+    }),
+  });
+  return mapApiTurf(data);
+};
