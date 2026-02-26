@@ -66,7 +66,8 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden text-gray-900 dark:text-white flex items-center justify-center p-6">
+    <main className="relative min-h-screen overflow-hidden text-gray-900 dark:text-white flex items-center justify-center p-4 sm:p-6">
+      <div className="absolute inset-0 bg-white dark:hidden" />
       <div
         className="absolute inset-0 bg-cover bg-left md:bg-center"
         style={{
@@ -75,7 +76,7 @@ export default function LoginPage() {
         }}
       />
       <div className="absolute inset-0 bg-white/70 dark:hidden" />
-      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(5,10,21,0.72)_0%,rgba(8,21,46,0.58)_48%,rgba(6,15,32,0.7)_100%)] dark:block hidden" />
+      <div className="hidden dark:block absolute inset-0 bg-[linear-gradient(120deg,rgba(5,10,21,0.72)_0%,rgba(8,21,46,0.58)_48%,rgba(6,15,32,0.7)_100%)]" />
       <div className="absolute inset-0 opacity-15 dark:opacity-30 [background-image:linear-gradient(to_right,rgba(148,163,184,.18)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.18)_1px,transparent_1px)] [background-size:34px_34px]" />
 
       <div className="relative z-10 w-full max-w-md surface-card rounded-2xl p-6 sm:p-8 backdrop-blur-md space-y-5">

@@ -86,7 +86,8 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden text-gray-900 dark:text-white flex items-center justify-center p-6">
+    <main className="relative min-h-screen overflow-hidden text-gray-900 dark:text-white flex items-center justify-center p-4 sm:p-6">
+      <div className="absolute inset-0 bg-white dark:hidden" />
       <div
         className="absolute inset-0 bg-cover bg-left md:bg-center"
         style={{

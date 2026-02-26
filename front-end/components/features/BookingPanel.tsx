@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
@@ -33,7 +33,7 @@ const expandHours = (startTime: string, endTime: string): string[] => {
 };
 
 export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
-  const [userId, setUserId] = useState("");
+  const [clientId, setClientId] = useState("");
   const [phone, setPhone] = useState("");
   const [date, setDate] = useState(getTodayIsoDate());
   const [startTime, setStartTime] = useState("18:00");
@@ -52,11 +52,14 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
   const [createdBookingId, setCreatedBookingId] = useState("");
 
   useEffect(() => {
-    const storedUserId = window.localStorage.getItem("matchhub_user_id") || "";
+    const storedUserId =
+      window.localStorage.getItem("matchhub_client_id") ||
+      window.localStorage.getItem("matchhub_user_id") ||
+      "";
     const session = getAuthSession();
 
     if (storedUserId) {
-      setUserId(storedUserId);
+      setClientId(storedUserId);
     }
 
     if (session?.user?.phone) {
@@ -65,9 +68,10 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
   }, []);
 
   useEffect(() => {
-    if (!userId) return;
-    window.localStorage.setItem("matchhub_user_id", userId);
-  }, [userId]);
+    if (!clientId) return;
+    window.localStorage.setItem("matchhub_client_id", clientId);
+    window.localStorage.setItem("matchhub_user_id", clientId);
+  }, [clientId]);
 
   useEffect(() => {
     let active = true;
@@ -132,8 +136,8 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
     setPaymentMessage("");
     setPaymentStatus(null);
 
-    if (!userId.trim()) {
-      setError("Login first or enter your user ID.");
+    if (!clientId.trim()) {
+      setError("Login first or enter your client ID.");
       return;
     }
 
@@ -146,15 +150,17 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
     try {
       const booking = await createBooking({
         turfId,
-        userId: userId.trim(),
-        date,
+        clientId: clientId.trim(),
+        bookingDate: date,
         startTime,
         endTime,
         notes: notes.trim() || undefined,
       });
 
       setCreatedBookingId(booking.id);
-      setSuccess(`Booking created (${booking.id.slice(0, 8)}). Status: ${booking.status}. Total: KES ${booking.total_amount}.`);
+      setSuccess(
+        `Booking created (${booking.id.slice(0, 8)}). Status: ${booking.status}. Payment: ${booking.payment_status}. Total: KES ${booking.total_amount}.`
+      );
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Failed to create booking");
     } finally {
@@ -180,7 +186,7 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
     try {
       const response = await initiateStkPush({
         bookingId: createdBookingId,
-        userId: userId.trim(),
+        clientId: clientId.trim(),
         phone: phone.trim(),
       });
 
@@ -217,18 +223,18 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="surface-card rounded-2xl p-6 space-y-4">
-      <h2 className="font-bold text-2xl text-gray-900 dark:text-white">Book This Turf</h2>
+    <form onSubmit={handleSubmit} className="surface-card rounded-2xl p-4 sm:p-6 space-y-4">
+      <h2 className="font-bold text-xl sm:text-2xl text-gray-900 dark:text-white">Book This Turf</h2>
       <p className="text-sm text-gray-500 dark:text-gray-400">Select date/time, create booking, then trigger M-Pesa STK Push.</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label className="block">
-          <span className="block text-sm font-semibold mb-1">User ID</span>
+          <span className="block text-sm font-semibold mb-1">Client ID</span>
           <input
-            value={userId}
-            onChange={(event) => setUserId(event.target.value)}
-            placeholder="X-User-Id"
-            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-gray-900"
+            value={clientId}
+            onChange={(event) => setClientId(event.target.value)}
+            placeholder="Client UUID"
+            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-[var(--surface)]"
           />
         </label>
 
@@ -238,7 +244,7 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
             placeholder="07XXXXXXXX"
-            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-gray-900"
+            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-[var(--surface)]"
           />
         </label>
       </div>
@@ -251,7 +257,7 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
             min={getTodayIsoDate()}
             value={date}
             onChange={(event) => setDate(event.target.value)}
-            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-gray-900"
+            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-[var(--surface)]"
           />
         </label>
 
@@ -261,7 +267,7 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
             value={notes}
             onChange={(event) => setNotes(event.target.value)}
             placeholder="Team name, jersey color..."
-            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-gray-900"
+            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-[var(--surface)]"
           />
         </label>
       </div>
@@ -279,7 +285,7 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
                 setEndTime(toTimeLabel(nextHour));
               }
             }}
-            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-gray-900"
+            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-[var(--surface)]"
           >
             {startOptions.map((hour) => {
               const label = toTimeLabel(hour);
@@ -298,7 +304,7 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
           <select
             value={endTime}
             onChange={(event) => setEndTime(event.target.value)}
-            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-gray-900"
+            className="w-full p-3 border border-[var(--color-border)] rounded-xl bg-white dark:bg-[var(--surface)]"
           >
             {endOptions.map((hour) => {
               const label = toTimeLabel(hour);
@@ -312,7 +318,7 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
         </label>
       </div>
 
-      <div className="rounded-xl bg-[var(--surface-muted)] dark:bg-gray-900 border border-[var(--color-border)] p-4">
+      <div className="rounded-xl bg-[var(--surface-muted)] dark:bg-[var(--surface-muted)] border border-[var(--color-border)] p-4">
         <p className="text-sm text-gray-600 dark:text-gray-300">Hours: {selectedHours}</p>
         <p className="text-lg font-bold text-[var(--color-primary)]">Total: KES {totalAmount}</p>
         <p className="text-xs text-gray-500 mt-1">Availability and booking checks use your backend endpoints.</p>
@@ -345,7 +351,7 @@ export const BookingPanel = ({ turfId, pricePerHour }: BookingPanelProps) => {
           type="button"
           onClick={handleCheckPaymentStatus}
           disabled={!createdBookingId || checkingPayment}
-          className="w-full border border-[var(--color-border)] px-6 py-3 rounded-xl font-bold hover:bg-[var(--surface-muted)] dark:hover:bg-gray-800 transition disabled:opacity-60"
+          className="w-full border border-[var(--color-border)] px-6 py-3 rounded-xl font-bold hover:bg-[var(--surface-muted)] dark:hover:bg-[var(--surface-muted)] transition disabled:opacity-60"
         >
           {checkingPayment ? "Checking..." : "Check Payment Status"}
         </button>
