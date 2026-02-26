@@ -74,7 +74,7 @@ export default function SignupPage() {
       });
 
       if (session.user.user_type === "admin") {
-        router.replace("/dashboard");
+        router.replace("/dashboard/bookings");
         return;
       }
       router.replace("/turfs");
