@@ -33,6 +33,10 @@ const AUTH_STORAGE_KEY = "matchhub_auth_session";
 const CLIENT_ID_STORAGE_KEY = "matchhub_client_id";
 const LEGACY_USER_ID_STORAGE_KEY = "matchhub_user_id";
 
+// Cache for getAuthSession to prevent infinite re-renders with useSyncExternalStore
+let authSessionCache: AuthSession | null = null;
+let isCacheInitialized = false;
+
 export const signup = async (payload: {
   role: "player" | "turf_owner" | "admin";
   name: string;
@@ -137,19 +141,37 @@ export const saveAuthSession = (session: AuthSession) => {
   window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
   window.localStorage.setItem(CLIENT_ID_STORAGE_KEY, session.user.id);
   window.localStorage.setItem(LEGACY_USER_ID_STORAGE_KEY, session.user.id);
+  // Update cache to prevent infinite re-renders
+  authSessionCache = session;
+  isCacheInitialized = true;
 };
 
 export const getAuthSession = (): AuthSession | null => {
   if (typeof window === "undefined") return null;
 
+  // Return cached value if available to prevent infinite re-renders with useSyncExternalStore
+  if (isCacheInitialized && authSessionCache !== null) {
+    return authSessionCache;
+  }
+
   const raw = window.localStorage.getItem(AUTH_STORAGE_KEY);
-  if (!raw) return null;
+  if (!raw) {
+    isCacheInitialized = true;
+    return null;
+  }
 
   try {
     const parsed = JSON.parse(raw) as AuthSession;
-    if (!parsed?.user?.id) return null;
+    if (!parsed?.user?.id) {
+      isCacheInitialized = true;
+      return null;
+    }
+    // Cache the result
+    authSessionCache = parsed;
+    isCacheInitialized = true;
     return parsed;
   } catch {
+    isCacheInitialized = true;
     return null;
   }
 };
@@ -159,4 +181,7 @@ export const clearAuthSession = () => {
   window.localStorage.removeItem(AUTH_STORAGE_KEY);
   window.localStorage.removeItem(CLIENT_ID_STORAGE_KEY);
   window.localStorage.removeItem(LEGACY_USER_ID_STORAGE_KEY);
+  // Clear cache to prevent infinite re-renders
+  authSessionCache = null;
+  isCacheInitialized = true;
 };
