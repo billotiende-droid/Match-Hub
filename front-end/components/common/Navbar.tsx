@@ -21,6 +21,9 @@ export const Navbar = () => {
     { href: '/turfs', label: 'Turfs' },
     { href: '/games', label: 'Games' },
     { href: '/tournaments', label: 'Tournaments' },
+    ...(session?.user.user_type === "admin"
+      ? [{ href: '/dashboard/bookings', label: 'Bookings' }]
+      : []),
   ];
 
   useEffect(() => {
@@ -37,6 +40,8 @@ export const Navbar = () => {
     setMobileMenuOpen(false);
     router.push("/");
   };
+
+  const dashboardHref = session?.user.user_type === "admin" ? "/dashboard/bookings" : "/dashboard";
 
   return (
     <>
@@ -70,7 +75,7 @@ export const Navbar = () => {
           </button>
           {session ? (
             <>
-              <Link href="/dashboard" className="font-medium text-gray-900 dark:text-white max-w-40 truncate">
+              <Link href={dashboardHref} className="font-medium text-gray-900 dark:text-white max-w-40 truncate">
                 {session.user.name}
               </Link>
               <button
@@ -137,7 +142,7 @@ export const Navbar = () => {
           {session ? (
             <div className="flex flex-col gap-2">
               <Link
-                href="/dashboard"
+                href={dashboardHref}
                 onClick={() => setMobileMenuOpen(false)}
                 className="px-2 py-2 rounded-lg font-semibold text-gray-900 dark:text-white hover:bg-[var(--surface-muted)] dark:hover:bg-[var(--surface-muted)]"
               >
