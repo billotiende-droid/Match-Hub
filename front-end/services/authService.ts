@@ -32,6 +32,7 @@ export interface AuthSession {
 const AUTH_STORAGE_KEY = "matchhub_auth_session";
 const CLIENT_ID_STORAGE_KEY = "matchhub_client_id";
 const LEGACY_USER_ID_STORAGE_KEY = "matchhub_user_id";
+const AUTH_EVENT_NAME = "matchhub-auth-session-change";
 
 // Cache for getAuthSession to prevent infinite re-renders with useSyncExternalStore
 let authSessionCache: AuthSession | null = null;
@@ -144,6 +145,7 @@ export const saveAuthSession = (session: AuthSession) => {
   // Update cache to prevent infinite re-renders
   authSessionCache = session;
   isCacheInitialized = true;
+  window.dispatchEvent(new Event(AUTH_EVENT_NAME));
 };
 
 export const getAuthSession = (): AuthSession | null => {
@@ -184,4 +186,17 @@ export const clearAuthSession = () => {
   // Clear cache to prevent infinite re-renders
   authSessionCache = null;
   isCacheInitialized = true;
+  window.dispatchEvent(new Event(AUTH_EVENT_NAME));
+};
+
+export const subscribeAuthSession = (listener: () => void) => {
+  if (typeof window === "undefined") return () => {};
+
+  window.addEventListener(AUTH_EVENT_NAME, listener);
+  window.addEventListener("storage", listener);
+
+  return () => {
+    window.removeEventListener(AUTH_EVENT_NAME, listener);
+    window.removeEventListener("storage", listener);
+  };
 };
