@@ -14,13 +14,6 @@
   --color-black-soft: #1a1a1a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
 :root.dark {
   --background: #000000;
   --foreground: #f5f7fa;
@@ -157,4 +150,3 @@ body {
     transform: translateY(0);
   }
 }
-
