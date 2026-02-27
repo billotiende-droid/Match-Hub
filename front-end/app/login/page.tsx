@@ -56,7 +56,7 @@ export default function LoginPage() {
             "url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000&auto=format&fit=crop')",
         }}
       />
-      <div className="absolute inset-0 bg-white/70 dark:hidden" />
+      <div className="absolute inset-0 bg-white/30 dark:hidden" />
       <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(5,10,21,0.72)_0%,rgba(8,21,46,0.58)_48%,rgba(6,15,32,0.7)_100%)] dark:block hidden" />
       <div className="absolute inset-0 opacity-15 dark:opacity-30 [background-image:linear-gradient(to_right,rgba(148,163,184,.18)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,.18)_1px,transparent_1px)] [background-size:34px_34px]" />
 
