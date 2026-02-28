@@ -15,31 +15,60 @@ export interface AvailabilityResponse {
 
 interface CreateBookingPayload {
   turfId: string;
-  userId: string;
-  date: string;
+  clientId: string;
+  bookingDate: string;
   startTime: string;
   endTime: string;
   notes?: string;
 }
 
-interface CreateBookingResponse {
+type BookingStatus = "pending" | "confirmed" | "cancelled" | "completed";
+type BookingPaymentStatus = "unpaid" | "paid" | "refunded";
+
+export interface BookingRecord {
   id: string;
   turf_id: string;
-  user_id: string;
-  date: string;
+  client_id: string;
+  game_id?: string | null;
+  booking_date: string;
   start_time: string;
   end_time: string;
   total_amount: number;
-  status: string;
-  notes?: string;
+  status: BookingStatus;
+  payment_status: BookingPaymentStatus;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export type UserBooking = CreateBookingResponse;
+type CreateBookingResponse = BookingRecord;
+
+export type UserBooking = BookingRecord;
+
+export interface OwnerBooking extends BookingRecord {
+  client: {
+    id: string;
+    name: string;
+    email?: string | null;
+    phone?: string | null;
+    skill_level?: "beginner" | "intermediate" | "pro" | null;
+    user_type: "client";
+  } | null;
+  turf: {
+    id: string;
+    admin_id: string;
+    name: string;
+    location: string;
+    price_per_hour: number;
+    opening_time?: string | null;
+    closing_time?: string | null;
+    is_active: boolean;
+  } | null;
+}
 
 interface StkPushResponse {
   message: string;
   booking_id: string;
-  payment_status: string;
+  payment_status: "pending" | "completed" | "failed";
   merchant_request_id?: string;
   checkout_request_id?: string;
   response_code?: string;
@@ -68,11 +97,11 @@ export const createBooking = async (
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-User-Id": payload.userId,
+      "X-User-Id": payload.clientId,
     },
     body: JSON.stringify({
       turf_id: payload.turfId,
-      date: payload.date,
+      booking_date: payload.bookingDate,
       start_time: payload.startTime,
       end_time: payload.endTime,
       notes: payload.notes,
@@ -80,10 +109,29 @@ export const createBooking = async (
   });
 };
 
-export const getMyBookings = async (userId: string): Promise<UserBooking[]> => {
+export const getMyBookings = async (clientId: string): Promise<UserBooking[]> => {
   return apiRequest<UserBooking[]>("/bookings", {
     headers: {
-      "X-User-Id": userId,
+      "X-User-Id": clientId,
+    },
+    cache: "no-store",
+  });
+};
+
+export const getOwnerBookings = async (
+  adminId: string,
+  params?: { date?: string }
+): Promise<OwnerBooking[]> => {
+  const queryParams = new URLSearchParams();
+  if (params?.date) {
+    queryParams.set("date", params.date);
+  }
+
+  const queryString = queryParams.toString();
+
+  return apiRequest<OwnerBooking[]>(`/owner/bookings${queryString ? `?${queryString}` : ""}`, {
+    headers: {
+      "X-User-Id": adminId,
     },
     cache: "no-store",
   });
@@ -91,14 +139,14 @@ export const getMyBookings = async (userId: string): Promise<UserBooking[]> => {
 
 export const initiateStkPush = async (payload: {
   bookingId: string;
-  userId: string;
+  clientId: string;
   phone: string;
 }): Promise<StkPushResponse> => {
   return apiRequest<StkPushResponse>("/payments/stkpush", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-User-Id": payload.userId,
+      "X-User-Id": payload.clientId,
     },
     body: JSON.stringify({
       booking_id: payload.bookingId,
@@ -110,5 +158,15 @@ export const initiateStkPush = async (payload: {
 export const getPaymentStatus = async (bookingId: string): Promise<PaymentStatusResponse> => {
   return apiRequest<PaymentStatusResponse>(`/payments/${bookingId}/status`, {
     cache: "no-store",
+  });
+};
+
+export const approveBooking = async (bookingId: string, adminId: string): Promise<BookingRecord> => {
+  return apiRequest<BookingRecord>(`/bookings/${bookingId}/approve`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "X-User-Id": adminId,
+    },
   });
 };
