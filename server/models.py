@@ -105,6 +105,7 @@ class Booking(db.Model, SerializerMixin):
     turf = db.relationship("Turf", back_populates="bookings")
     game = db.relationship("Game", back_populates="bookings")
     transactions = db.relationship("Transaction", back_populates="booking")
+    review = db.relationship("Review", back_populates="booking", uselist=False)
 
 class Tournament(db.Model, SerializerMixin):
     __tablename__ = "tournaments"
