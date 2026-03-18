@@ -265,7 +265,7 @@ export default function SignupPage() {
           <Button
             type="submit"
             className="h-10 w-full"
-            disabled={isLoading || !allPasswordChecksMet || !passwordsMatch}
+            disabled={isLoading}
           >
             {isLoading ? (
               <>
