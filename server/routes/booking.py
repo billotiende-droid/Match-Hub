@@ -35,3 +35,13 @@ class BookingResource(Resource):
                     
                     if (booked_count + args['participant_count']) > game.max_players:
                         return {"error": "Game is full"}, 400
+                    
+                    new_booking = Booking(
+                        client_id=args['client_id'],
+                        booking_type='game_join',
+                        game_id=game.id,
+                        turf_id=game.turf_id, # Inherit turf from game
+                        participant_count=args['participant_count'],
+                        total_amount=game.price_per_player * args['participant_count'],
+                        status='pending'
+                    )
