@@ -79,3 +79,7 @@ class BookingResource(Resource):
                 db.session.add(new_booking)
             
             return {"message": "Booking initiated", "id": str(new_booking.id)}, 201
+        
+        except Exception as e:
+            return {"error": str(e)}, 500
+        
