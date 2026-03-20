@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, Enum, UniqueConstraint, String
+from sqlalchemy import MetaData, Enum, UniqueConstraint, String, Date, Time, Numeric
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy_serializer import SerializerMixin
 
@@ -96,10 +96,30 @@ class Booking(db.Model, SerializerMixin):
     serialize_rules = ('-client.bookings', '-turf.bookings', '-game.bookings', '-transactions.booking')
 
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
-    client_id = db.Column(db.String(36), db.ForeignKey("clients.id"))
-    turf_id = db.Column(db.String(36), db.ForeignKey("turfs.id"))
-    game_id = db.Column(db.String(36), db.ForeignKey("games.id"))
+    client_id = db.Column(db.String(36), db.ForeignKey("clients.id"), nullable=False)
+    
+    # Polymorphic Type: 'private_rent' (whole turf) | 'game_join' (joining a match)
+    booking_type = db.Column(db.Enum('private_rent', 'game_join', name='booking_type_types'), nullable=False)
+    
+    # Relationships - Always required to know WHERE the event is
+    turf_id = db.Column(db.String(36), db.ForeignKey("turfs.id"), nullable=False)
+    # Only required if booking_type is 'game_join'
+    game_id = db.Column(db.String(36), db.ForeignKey("games.id"), nullable=True)
+    
+    # Quantity / Inventory - How many spots this specific client is paying for
+    participant_count = db.Column(db.Integer, default=1)
+    
+    # Timing & Financials
+    booking_date = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+    total_amount = db.Column(db.Numeric(10, 2), nullable=False)
+    
     status = db.Column(db.Enum('pending', 'confirmed', 'cancelled', name='booking_status_types'), default='pending')
+    payment_status = db.Column(db.Enum('unpaid', 'paid', name='payment_status_types'), default='unpaid')
+    
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     client = db.relationship("Client", back_populates="bookings")
     turf = db.relationship("Turf", back_populates="bookings")
