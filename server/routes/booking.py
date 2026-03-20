@@ -45,3 +45,24 @@ class BookingResource(Resource):
                         total_amount=game.price_per_player * args['participant_count'],
                         status='pending'
                     )
+
+            # --- LOGIC FOR PRIVATE RENTAL ---
+                else:
+                    if not args['turf_id']:
+                        return {"error": "turf_id required for private_rent"}, 400
+                    
+                    # Check for overlap (The Performance Index on date/time shines here)
+                    conflict = Booking.query.filter(
+                    Booking.turf_id == args['turf_id'],
+                    Booking.booking_date == args['booking_date'],
+                    Booking.status != 'cancelled',
+                    # Logic: New Start < Existing End AND New End > Existing Start
+                    Booking.start_time < args['end_time'],
+                    Booking.end_time > args['start_time']
+                    ).first()
+
+                    if conflict:
+                        return {
+                            "error": "Time slot overlap detected", 
+                            "conflicting_slot": f"{conflict.start_time} - {conflict.end_time}"
+                        }, 409
