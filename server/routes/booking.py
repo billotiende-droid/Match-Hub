@@ -66,3 +66,16 @@ class BookingResource(Resource):
                             "error": "Time slot overlap detected", 
                             "conflicting_slot": f"{conflict.start_time} - {conflict.end_time}"
                         }, 409
+                    
+                    new_booking = Booking(
+                        client_id=args['client_id'],
+                        booking_type='private_rent',
+                        turf_id=args['turf_id'],
+                        game_id=None,
+                        participant_count=args['participant_count'],
+                        status='pending'
+                    )
+
+                db.session.add(new_booking)
+            
+            return {"message": "Booking initiated", "id": str(new_booking.id)}, 201
