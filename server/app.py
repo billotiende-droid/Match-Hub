@@ -5,6 +5,7 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from models import db
 from routes.auth import SignupResource, LoginResource
+from routes.booking import BookingResource
 
 app = Flask(__name__)
 
@@ -21,6 +22,7 @@ CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 # Auth routes
 api.add_resource(SignupResource, '/api/auth/signup')
 api.add_resource(LoginResource, '/api/auth/login')
+api.add_resource(BookingResource, '/bookings')
 
 
 if __name__ == '__main__':
