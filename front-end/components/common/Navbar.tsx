@@ -30,9 +30,12 @@ export const Navbar = () => {
     initTheme();
   }, []);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    applyTheme(nextTheme);
+  const setLightMode = () => {
+    applyTheme("light");
+  };
+
+  const setDarkMode = () => {
+    applyTheme("dark");
   };
 
   const handleLogout = () => {
@@ -63,15 +66,18 @@ export const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-3">
           <button
-            onClick={toggleTheme}
-            className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white dark:bg-[var(--surface)]"
-            aria-label="Toggle theme"
+            onClick={setLightMode}
+            className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-all duration-300 ease-in-out bg-white dark:bg-[var(--surface)] hover:scale-110"
+            aria-label="Switch to light mode"
           >
-            {theme === "dark" ? (
-              <Moon size={20} className="text-[var(--foreground)]" />
-            ) : (
-              <Sun size={20} className="text-[var(--color-accent)]" />
-            )}
+            <Sun size={20} className="text-[var(--color-accent)] transition-transform duration-300" />
+          </button>
+          <button
+            onClick={setDarkMode}
+            className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-all duration-300 ease-in-out bg-white dark:bg-[var(--surface)] hover:scale-110"
+            aria-label="Switch to dark mode"
+          >
+            <Moon size={20} className="text-[var(--foreground)] transition-transform duration-300" />
           </button>
           {session ? (
             <>
@@ -102,15 +108,18 @@ export const Navbar = () => {
 
         <div className="flex md:hidden items-center gap-2">
           <button
-            onClick={toggleTheme}
-            className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-colors bg-white dark:bg-[var(--surface)]"
-            aria-label="Toggle theme"
+            onClick={setLightMode}
+            className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-all duration-300 ease-in-out bg-white dark:bg-[var(--surface)] hover:scale-110"
+            aria-label="Switch to light mode"
           >
-            {theme === "dark" ? (
-              <Moon size={18} className="text-[var(--foreground)]" />
-            ) : (
-              <Sun size={18} className="text-[var(--color-accent)]" />
-            )}
+            <Sun size={18} className="text-[var(--color-accent)] transition-transform duration-300" />
+          </button>
+          <button
+            onClick={setDarkMode}
+            className="p-2 border border-[var(--color-border)] rounded-lg hover:bg-[var(--surface-muted)] transition-all duration-300 ease-in-out bg-white dark:bg-[var(--surface)] hover:scale-110"
+            aria-label="Switch to dark mode"
+          >
+            <Moon size={18} className="text-[var(--foreground)] transition-transform duration-300" />
           </button>
           <button
             type="button"
