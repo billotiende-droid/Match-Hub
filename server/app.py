@@ -2,7 +2,10 @@ import os
 from flask import Flask
 from flask_restful import Api
 from flask_migrate import Migrate
+from flask_cors import CORS
 from models import db
+from routes.auth import SignupResource, LoginResource
+from routes.booking import BookingResource
 
 app = Flask(__name__)
 
@@ -13,9 +16,13 @@ db.init_app(app)
 migrate = Migrate(app, db)
 api = Api(app)
 
+# Enable CORS for all routes
+CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 
-# Note: Import your Resource classes here to add routes later
-# api.add_resource(YourResource, '/endpoint')
+# Auth routes
+api.add_resource(SignupResource, '/api/auth/signup')
+api.add_resource(LoginResource, '/api/auth/login')
+api.add_resource(BookingResource, '/bookings')
 
 
 if __name__ == '__main__':
