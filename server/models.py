@@ -66,7 +66,8 @@ class Turf(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     admin_id = db.Column(db.String(36), db.ForeignKey("admins.id"))
     name = db.Column(db.String(100), nullable=False)
-    price_per_hour = db.Column(db.Float, nullable=False)
+    price_per_hour = db.Column(db.Numeric(10, 2), nullable=False) # Changed from Float
+    is_active = db.Column(db.Boolean, default=True) # Added this (missing in model)
 
     admin = db.relationship("Admin", back_populates="turfs")
     games = db.relationship("Game", back_populates="turf")
@@ -84,49 +85,81 @@ class Game(db.Model, SerializerMixin):
     title = db.Column(db.String(100))
     game_date = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.Enum('open', 'full', 'cancelled', 'completed', name='game_status_types'), default='open')
+    max_players = db.Column(db.Integer, default=10) # How many people can join
+    price_per_player = db.Column(db.Numeric(10, 2), default=0.00) # Cost to join
+    end_time = db.Column(db.Time) # Optional: when the game ends
 
     turf = db.relationship("Turf", back_populates="games")
     tournament = db.relationship("Tournament", back_populates="games")
     bookings = db.relationship("Booking", back_populates="game")
-
+    
 class Booking(db.Model, SerializerMixin):
     __tablename__ = "bookings"
     
-    # Most important: Stop infinite loops between Client <-> Booking <-> Turf
-    serialize_rules = ('-client.bookings', '-turf.bookings', '-game.bookings', '-transactions.booking')
+    # Prevents infinite loops during JSON serialization
+    serialize_rules = (
+        '-client.bookings', 
+        '-turf.bookings', 
+        '-game.bookings', 
+        '-transactions.booking', 
+        '-review.booking'
+    )
 
+    # Primary Key & Foreign Keys
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     client_id = db.Column(db.String(36), db.ForeignKey("clients.id"), nullable=False)
-    
-    # Polymorphic Type: 'private_rent' (whole turf) | 'game_join' (joining a match)
-    booking_type = db.Column(db.Enum('private_rent', 'game_join', name='booking_type_types'), nullable=False)
-    
-    # Relationships - Always required to know WHERE the event is
     turf_id = db.Column(db.String(36), db.ForeignKey("turfs.id"), nullable=False)
-    # Only required if booking_type is 'game_join'
     game_id = db.Column(db.String(36), db.ForeignKey("games.id"), nullable=True)
     
-    # Quantity / Inventory - How many spots this specific client is paying for
-    participant_count = db.Column(db.Integer, default=1)
+    # Types & Statuses
+    booking_type = db.Column(
+        db.Enum('private_rent', 'game_join', name='booking_type_types'), 
+        nullable=False
+    )
+    status = db.Column(
+        db.Enum('pending', 'confirmed', 'cancelled', name='booking_status_types'), 
+        default='pending'
+    )
+    payment_status = db.Column(
+        db.Enum('unpaid', 'paid', name='payment_status_types'), 
+        default='unpaid'
+    )
     
-    # Timing & Financials
+    # Quantities & Financials
+    participant_count = db.Column(db.Integer, default=1, nullable=False)
+    total_amount = db.Column(db.Numeric(10, 2), nullable=False)
+    
+    # Timing
     booking_date = db.Column(db.Date, nullable=False)
     start_time = db.Column(db.Time, nullable=False)
     end_time = db.Column(db.Time, nullable=False)
-    total_amount = db.Column(db.Numeric(10, 2), nullable=False)
     
-    status = db.Column(db.Enum('pending', 'confirmed', 'cancelled', name='booking_status_types'), default='pending')
-    payment_status = db.Column(db.Enum('unpaid', 'paid', name='payment_status_types'), default='unpaid')
-    
+    # Audit Timestamps
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(
+        db.DateTime, 
+        default=lambda: datetime.now(timezone.utc), 
+        onupdate=lambda: datetime.now(timezone.utc)
+    )
 
+    # Relationships
     client = db.relationship("Client", back_populates="bookings")
     turf = db.relationship("Turf", back_populates="bookings")
     game = db.relationship("Game", back_populates="bookings")
-    transactions = db.relationship("Transaction", back_populates="booking")
+    transactions = db.relationship("Transaction", back_populates="booking", cascade="all, delete-orphan")
     review = db.relationship("Review", back_populates="booking", uselist=False)
 
+    # Constraints
+    __table_args__ = (
+        # Ensures that if it's a game_join, a game_id MUST be provided.
+        # Private rents are allowed to have game_id as NULL.
+        db.CheckConstraint(
+            "(booking_type = 'game_join' AND game_id IS NOT NULL) OR (booking_type = 'private_rent')",
+            name="check_game_id_if_game_join"
+        ),
+        # Optional: Ensures participant count is never zero or negative
+        db.CheckConstraint("participant_count > 0", name="check_positive_participants"),
+    )
 class Tournament(db.Model, SerializerMixin):
     __tablename__ = "tournaments"
 
