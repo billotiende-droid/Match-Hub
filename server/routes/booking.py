@@ -1,7 +1,7 @@
 from flask_restful import Resource, reqparse, inputs
 from models import db, Booking, Game, Turf
 from sqlalchemy import func
-from datetime import datetime
+from datetime import datetime, time, date, timedelta
 
 class BookingResource(Resource):
     def post(self):
@@ -40,20 +40,39 @@ class BookingResource(Resource):
                     if (booked_count + args['participant_count']) > game.max_players:
                         return {"error": f"Only {game.max_players - booked_count} slots left"}, 400
 
+                    # Extract timing from game_date
+                    booking_date = game.game_date.date()
+                    start_time = game.game_date.time()
+                    # Assume 1 hour duration for game bookings, or extract from game if available
+                    from datetime import timedelta
+                    end_time = (game.game_date + timedelta(hours=1)).time()
+                    
                     new_booking = Booking(
                         client_id=args['client_id'],
                         booking_type='game_join',
                         game_id=game.id,
                         turf_id=game.turf_id, 
+                        booking_date=booking_date,
+                        start_time=start_time,
+                        end_time=end_time,
                         participant_count=args['participant_count'],
                         total_amount=game.price_per_player * args['participant_count'],
-                        status='pending'
+                        status='pending',
+                        payment_status='unpaid'
                     )
 
                 # --- CASE 2: PRIVATE RENTAL ---
                 else:
                     if not all([args['turf_id'], args['booking_date'], args['start_time'], args['end_time']]):
                         return {"error": "turf_id, date, start_time, and end_time are required"}, 400
+                    
+                    # Parse string values to proper date/time objects
+                    try:
+                        booking_date = datetime.strptime(args['booking_date'], '%Y-%m-%d').date()
+                        start_time = datetime.strptime(args['start_time'], '%H:%M').time()
+                        end_time = datetime.strptime(args['end_time'], '%H:%M').time()
+                    except ValueError as e:
+                        return {"error": f"Invalid date/time format: {str(e)}"}, 400
                     
                     # VALIDATION: Check if Turf exists and is active
                     turf = Turf.query.get(args['turf_id'])
@@ -63,10 +82,10 @@ class BookingResource(Resource):
                     # OVERLAP CHECK: Is the turf busy?
                     conflict = Booking.query.filter(
                         Booking.turf_id == args['turf_id'],
-                        Booking.booking_date == args['booking_date'],
+                        Booking.booking_date == booking_date,
                         Booking.status != 'cancelled',
-                        Booking.start_time < args['end_time'],
-                        Booking.end_time > args['start_time']
+                        Booking.start_time < end_time,
+                        Booking.end_time > start_time
                     ).first()
 
                     if conflict:
@@ -79,12 +98,13 @@ class BookingResource(Resource):
                         booking_type='private_rent',
                         turf_id=args['turf_id'],
                         game_id=None,
-                        booking_date=args['booking_date'],
-                        start_time=args['start_time'],
-                        end_time=args['end_time'],
+                        booking_date=booking_date,
+                        start_time=start_time,
+                        end_time=end_time,
                         participant_count=args['participant_count'],
                         total_amount=turf.price_per_hour, # Or calculate duration-based
-                        status='pending'
+                        status='pending',
+                        payment_status='unpaid'
                     )
 
                 db.session.add(new_booking)
