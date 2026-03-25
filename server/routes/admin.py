@@ -60,3 +60,52 @@ class AdminTurfResource(Resource):
         # that could cause circular recursion
         return {"turfs": [t.to_dict(only=('id', 'name', 'price_per_hour', 'location', 'amenities', 'images', 'operating_hours', 'sport_type', 'is_active')) for t in turfs]}, 200
 
+
+class AdminTurfDetailResource(Resource):
+    """Individual turf management"""
+    
+    def get(self, turf_id):
+        """Get turf details"""
+        turf = Turf.query.get(turf_id)
+        if not turf:
+            return {"error": "Turf not found"}, 404
+        return {"turf": turf.to_dict(only=('id', 'admin_id', 'name', 'price_per_hour', 'location', 'amenities', 'images', 'operating_hours', 'sport_type', 'is_active'))}, 200
+    
+    def put(self, turf_id):
+        """Update turf details"""
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str)
+        parser.add_argument('price_per_hour', type=float)
+        parser.add_argument('location', type=str)
+        parser.add_argument('amenities', type=str)
+        parser.add_argument('images', type=str)
+        parser.add_argument('operating_hours', type=str)
+        parser.add_argument('sport_type', type=str)
+        args = parser.parse_args()
+        
+        turf = Turf.query.get(turf_id)
+        if not turf:
+            return {"error": "Turf not found"}, 404
+        
+        # Update fields if provided
+        if args['name']: turf.name = args['name']
+        if args['price_per_hour']: turf.price_per_hour = args['price_per_hour']
+        if args['location']: turf.location = args['location']
+        if args['amenities']: turf.amenities = args['amenities']
+        if args['images']: turf.images = args['images']
+        if args['operating_hours']: turf.operating_hours = args['operating_hours']
+        if args['sport_type']: turf.sport_type = args['sport_type']
+        
+        db.session.commit()
+        return {"message": "Turf updated successfully", "turf": turf.to_dict(only=('id', 'admin_id', 'name', 'price_per_hour', 'location', 'amenities', 'images', 'operating_hours', 'sport_type', 'is_active'))}, 200
+    
+    def delete(self, turf_id):
+        """Delete a turf"""
+        turf = Turf.query.get(turf_id)
+        if not turf:
+            return {"error": "Turf not found"}, 404
+        
+        db.session.delete(turf)
+        db.session.commit()
+        return {"message": "Turf deleted successfully"}, 200
+
