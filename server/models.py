@@ -42,6 +42,8 @@ class Admin(db.Model, SerializerMixin):
     turfs = db.relationship("Turf", back_populates="admin")
     tournaments = db.relationship("Tournament", back_populates="admin")
 
+    serialize_rules = ('-turfs.admin', '-tournaments.admin')
+
 class Client(db.Model, SerializerMixin):
     __tablename__ = "clients"
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
@@ -55,19 +57,27 @@ class Client(db.Model, SerializerMixin):
 
     bookings = db.relationship("Booking", back_populates="client")
     teams = db.relationship("Team", back_populates="owner")
+    team_memberships = db.relationship("TeamMember", back_populates="client")
     notifications = db.relationship("Notification", back_populates="client", cascade="all, delete-orphan")
 
 class Turf(db.Model, SerializerMixin):
     __tablename__ = "turfs"
     
     # Don't re-serialize the admin or the lists of games/bookings in a simple list view
-    serialize_rules = ('-admin', '-games.turf', '-bookings.turf')
+    serialize_rules = ('-admin.turfs', '-games.turf', '-bookings.turf')
 
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     admin_id = db.Column(db.String(36), db.ForeignKey("admins.id"))
     name = db.Column(db.String(100), nullable=False)
-    price_per_hour = db.Column(db.Numeric(10, 2), nullable=False) # Changed from Float
-    is_active = db.Column(db.Boolean, default=True) # Added this (missing in model)
+    price_per_hour = db.Column(db.Numeric(10, 2), nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+    
+    # Additional fields for facility configuration
+    location = db.Column(db.String(255))
+    amenities = db.Column(db.Text)  # JSON string
+    images = db.Column(db.Text)    # JSON string of image URLs
+    operating_hours = db.Column(db.String(255))  # JSON string
+    sport_type = db.Column(db.String(50), default='football')
 
     admin = db.relationship("Admin", back_populates="turfs")
     games = db.relationship("Game", back_populates="turf")
@@ -87,6 +97,7 @@ class Game(db.Model, SerializerMixin):
     status = db.Column(db.Enum('open', 'full', 'cancelled', 'completed', name='game_status_types'), default='open')
     max_players = db.Column(db.Integer, default=10) # How many people can join
     price_per_player = db.Column(db.Numeric(10, 2), default=0.00) # Cost to join
+    skill_level = db.Column(db.Enum('beginner', 'intermediate', 'advanced', name='skill_level_types'))
     end_time = db.Column(db.Time) # Optional: when the game ends
 
     turf = db.relationship("Turf", back_populates="games")
@@ -172,6 +183,12 @@ class Tournament(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     admin_id = db.Column(db.String(36), db.ForeignKey("admins.id"), nullable=False)
     name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    entry_fee = db.Column(db.Numeric(10, 2), default=0.00)
+    prize_pool = db.Column(db.Numeric(10, 2), default=0.00)
+    max_teams = db.Column(db.Integer, default=16)
+    start_date = db.Column(db.DateTime)
+    end_date = db.Column(db.DateTime)
     
     # Using Enum for PG compatibility (e.g., 'upcoming', 'ongoing', 'completed')
     status = db.Column(
@@ -186,14 +203,35 @@ class Tournament(db.Model, SerializerMixin):
 
 class Team(db.Model, SerializerMixin):
     __tablename__ = "teams"
-    serialize_rules = ('-owner.teams', '-tournament_links.team')
+    serialize_rules = ('-owner.teams', '-tournament_links.team', '-members.team')
 
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     name = db.Column(db.String(100), nullable=False)
     client_id = db.Column(db.String(36), db.ForeignKey("clients.id"))
 
     owner = db.relationship("Client", back_populates="teams")
-    tournament_links = db.relationship("TournamentTeam", back_populates="team")    
+    tournament_links = db.relationship("TournamentTeam", back_populates="team")
+    members = db.relationship("TeamMember", back_populates="team", cascade="all, delete-orphan")    
+
+
+class TeamMember(db.Model, SerializerMixin):
+    __tablename__ = "team_members"
+    serialize_rules = ('-team.members', '-client.team_memberships')
+
+    id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
+    team_id = db.Column(db.String(36), db.ForeignKey("teams.id"), nullable=False)
+    client_id = db.Column(db.String(36), db.ForeignKey("clients.id"), nullable=False)
+    role = db.Column(db.Enum('captain', 'player', name='team_member_role_types'), nullable=False, default='player')
+    joined_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    # Relationships
+    team = db.relationship("Team", back_populates="members")
+    client = db.relationship("Client", back_populates="team_memberships")
+
+    # Constraints - prevent duplicate memberships
+    __table_args__ = (
+        UniqueConstraint('team_id', 'client_id', name='uq_team_member'),
+    )
 
 
 class TournamentTeam(db.Model, SerializerMixin):
@@ -232,6 +270,7 @@ class Transaction(db.Model, SerializerMixin):
     id = db.Column(db.String(36), primary_key=True, default=generate_uuid)
     booking_id = db.Column(db.String(36), db.ForeignKey("bookings.id"), nullable=False)
     amount = db.Column(db.Float, nullable=False)
+    reference = db.Column(db.String, unique=True)
     
     # Using Enum for PG compatibility (e.g., 'pending', 'completed', 'failed', 'refunded')
     status = db.Column(

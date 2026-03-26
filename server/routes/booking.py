@@ -33,12 +33,23 @@ class BookingResource(Resource):
                     if not game or game.status == 'cancelled':
                         return {"error": "Game not found or unavailable"}, 404
 
+                    # Check if game is already full
+                    if game.status == 'full':
+                        return {"error": "Game is full"}, 400
+                    
+                    # Get max_players (default to 10 if not set)
+                    max_players = game.max_players or 10
+                    
                     # Calculate current occupancy
                     booked_count = db.session.query(func.sum(Booking.participant_count))\
                         .filter(Booking.game_id == game.id, Booking.status != 'cancelled').scalar() or 0
                     
-                    if (booked_count + args['participant_count']) > game.max_players:
-                        return {"error": f"Only {game.max_players - booked_count} slots left"}, 400
+                    # Check if adding this booking would exceed max players
+                    available_slots = max_players - booked_count
+                    if args['participant_count'] > available_slots:
+                        if available_slots <= 0:
+                            return {"error": "Game is full - no slots available"}, 400
+                        return {"error": f"Only {available_slots} slots left"}, 400
 
                     # Extract timing from game_date
                     booking_date = game.game_date.date()
@@ -60,6 +71,11 @@ class BookingResource(Resource):
                         status='pending',
                         payment_status='unpaid'
                     )
+                    
+                    # Check if game is now full and update status
+                    new_booked_count = booked_count + args['participant_count']
+                    if new_booked_count >= max_players:
+                        game.status = 'full'
 
                 # --- CASE 2: PRIVATE RENTAL ---
                 else:
@@ -113,5 +129,5 @@ class BookingResource(Resource):
             return {"message": "Booking initiated successfully", "booking_id": str(new_booking.id)}, 201
         
         except Exception as e:
-            # The transaction automatically rolls back on error
-            return {"error": f"Database error: {str(e)}"}, 500
+                # The transaction automatically rolls back on error
+                return {"error": f"Database error: {str(e)}"}, 500
